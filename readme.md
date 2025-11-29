@@ -4,7 +4,25 @@
 
 # LSL.Enumerables.MarkdownTables
 
-Provide package documentation here.
+This library provides methods to generate a markdown table from a strongly typed `IEnumerable<T>`
+
+The following example uses all the defaults:
+
+```csharp
+var result = new List<KeyValuePair<string, string>>
+{
+    new("Key1", "Value1"),
+    new("Key2", "Value2")
+}.ToMarkdownTable();
+
+/* result will contain:
+
+| Key   | Value   |
+| :---- | :------ |
+| Key1  | Value1  |
+| Key2  | Value2  |
+*/
+```
 
 <!-- HIDE -->
 ## Further Documentation

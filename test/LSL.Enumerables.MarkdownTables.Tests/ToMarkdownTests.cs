@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Humanizer;
 
@@ -67,6 +68,24 @@ public class ToMarkdownTests
 
             """.ReplaceLineEndings()
         );        
+    }
+
+    [Test]
+    public void GivenSimpleInternalTypes_ItShouldProduceTheExpectedResult()
+    {
+        var result = new List<KeyValuePair<string, string>>
+        {
+            new("Key1", "Value1"),
+            new("Key2", "Value2")
+        }.ToMarkdownTable();
+
+        result.Should().Be("""
+            | Key   | Value   |
+            | :---- | :------ |
+            | Key1  | Value1  |
+            | Key2  | Value2  |
+
+            """.ReplaceLineEndings());
     }
 
     [Test]
