@@ -6,5 +6,8 @@ namespace LSL.Enumerables.MarkdownTables;
 public class EnumerableToMarkdownTableBuilderFactory : IEnumerableToMarkdownTableBuilderFactory
 {
     /// <inheritdoc/>
-    public IEnumerableToMarkdownTableBuilder Build(EnumerableToMarkdownTableBuilderOptions options) => new EnumerableToMarkdownTableBuilder(options);
+    public IEnumerableToMarkdownTableBuilder Build(EnumerableToMarkdownTableBuilderOptions options = null) => 
+        new EnumerableToMarkdownTableBuilder(
+            options ?? MarkdownTableGeneratorEnumerableExtensions._defaultOptions
+        );
 }

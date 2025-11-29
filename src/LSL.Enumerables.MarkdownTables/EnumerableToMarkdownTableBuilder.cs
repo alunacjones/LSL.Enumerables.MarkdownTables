@@ -11,21 +11,21 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
     public string CreateTable<T>(IEnumerable<T> items)
     {
         items.AssertNotNull(nameof(items));
+        
         var propertyMetaData = typeof(T).GetProperties().AsEnumerable()
             .Select(options.PropertyMetaDataProvider)
             .Where(p => p.IncludeInOutput);
+
         var propertyMetaDataDictionary = propertyMetaData.ToDictionary(m => m.PropertyInfo.Name, m => m);
-        var properties = propertyMetaData
-            .Where(m => m.IncludeInOutput);
 
         if (items.Any() is false) return options.DefaultResultIfNoItems;
 
-        var extractedValues = ExtractValues(items, properties, options);
+        var extractedValues = ExtractValues(items, propertyMetaData, options);
 
         var result = new StringBuilder();
         var headers = propertyMetaData
-            .Where(p => p.IncludeInOutput)
             .Select(p => new KeyValuePair<string, string>(p.PropertyInfo.Name, options.HeaderTransformer(p.PropertyInfo)));
+            
         var maxLengths = BuildMaxLengths(extractedValues, headers);
 
         var justifiedHeaders = propertyMetaData

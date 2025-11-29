@@ -79,13 +79,11 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// </list>
     /// </remarks>
     /// <param name="source"></param>
-    /// <param name="includeFallback"></param>
     /// <param name="numberFormat"></param>
     /// <param name="dateTimeFormat"></param>
     /// <returns></returns>
     public static EnumerableToMarkdownTableBuilderOptions AddDefaultValueTransformers(
         this EnumerableToMarkdownTableBuilderOptions source,
-        bool includeFallback = true,
         string numberFormat = null,
         string dateTimeFormat = null)
     {
@@ -93,8 +91,6 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
             new DateTimeValueTransformer(numberFormat),
             new NumberValueTransformer(dateTimeFormat)
         ]);
-
-        if (includeFallback) source.ValueTransformers.Add(new DefaultValueTransformer());
 
         return source;
     }

@@ -13,7 +13,7 @@ public class EnumerableToMarkdownTableBuilderOptions
     internal List<IValueTransformer> ValueTransformers { get; } = [];
 
     internal Func<PropertyInfo, PropertyMetaData> PropertyMetaDataProvider { get; set; } = 
-        p => new(p, p.IsSimpleType(), p.GetJustification(), p.ResolveValueTransformerFromAttributes());
+        p => new(p, p.ResolveOutputAllowedFromAttributesAndType(), p.GetJustification(), p.ResolveValueTransformerFromAttributes());
 
     /// <summary>
     /// The default to return if the enumerable that is being processed

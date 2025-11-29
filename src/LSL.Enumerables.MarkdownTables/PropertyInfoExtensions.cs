@@ -71,4 +71,14 @@ public static class PropertyInfoExtensions
 
         return null;
     }
+
+    /// <summary>
+    /// Resolve output allowed from attributes and type
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static bool ResolveOutputAllowedFromAttributesAndType(this PropertyInfo source)
+    {
+        return source.IsSimpleType() || source.GetCustomAttribute<IncludeInOutputAttribute>() is not null;
+    }
 }
