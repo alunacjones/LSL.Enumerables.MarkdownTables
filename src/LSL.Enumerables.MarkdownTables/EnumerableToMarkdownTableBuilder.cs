@@ -63,7 +63,7 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
         {
             var line = record.Aggregate(new List<string>(), (agg, i) =>
             {
-                agg.Add(i.Value.InternalReplaceLineEndings("<br/>").PadWithJustification(propertyMetaData[i.Key].Justification, maxLengths[i.Key]));
+                agg.Add(i.Value.PadWithJustification(propertyMetaData[i.Key].Justification, maxLengths[i.Key]));
                 return agg;
             });
 
@@ -72,13 +72,19 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
 
     private static IEnumerable<IDictionary<string, string>> ExtractValues<T>(IEnumerable<T> values, IEnumerable<PropertyMetaData> properties, EnumerableToMarkdownTableBuilderOptions options)
     {
-        var composite = CompositeHandlerFactory.CreateCompositeHandler(options.ValueTransformers.Select(v => new HandlerDelegate<object, string>(v.Transform))).Handler;
+        var composite = CompositeHandlerFactory.CreateCompositeHandler(
+            options.ValueTransformers.Select(v => new HandlerDelegate<object, string>(v.Transform))).Handler;
 
         return values.Select(v =>
         {
             return properties.Aggregate(new Dictionary<string, string>(), (agg, i) =>
             {
-                agg.Add(i.PropertyInfo.Name, i.ValueTransformer is null ? composite(i.PropertyInfo.GetValue(v)) : i.ValueTransformer.Transform(i.PropertyInfo.GetValue(v), () => $"{i.PropertyInfo.GetValue(v)}"));
+                var value = ((i.ValueTransformer is null 
+                    ? composite(i.PropertyInfo.GetValue(v)) : 
+                    i.ValueTransformer.Transform(i.PropertyInfo.GetValue(v), () => $"{i.PropertyInfo.GetValue(v)}")) ?? $"{i.PropertyInfo.GetValue(v)}")
+                    .InternalReplaceLineEndings();
+
+                agg.Add(i.PropertyInfo.Name, value);
                 return agg;
             });
         });

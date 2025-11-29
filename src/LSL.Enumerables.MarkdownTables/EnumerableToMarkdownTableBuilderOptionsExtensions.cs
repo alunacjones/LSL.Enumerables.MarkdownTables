@@ -40,7 +40,7 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <param name="handlerDelegate"></param>
     /// <returns></returns>
     public static EnumerableToMarkdownTableBuilderOptions AddValueTransformer(this EnumerableToMarkdownTableBuilderOptions source, HandlerDelegate<object, string> handlerDelegate) => 
-        source.AddValueTransformer(new DelegatingValueTransformer(handlerDelegate));
+        source.AddValueTransformer(new DelegatingValueTransformer(handlerDelegate.AssertNotNull(nameof(handlerDelegate))));
 
     /// <summary>
     /// Use the given property meta data provider delegate
