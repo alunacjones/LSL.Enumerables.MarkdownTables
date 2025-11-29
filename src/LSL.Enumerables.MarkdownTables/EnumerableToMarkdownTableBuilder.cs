@@ -63,8 +63,7 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
         {
             var line = record.Aggregate(new List<string>(), (agg, i) =>
             {
-                //agg.Add(i.Value.ReplaceLineEndings("<br/>").PadRight(maxLengths[i.Key]));
-                agg.Add(i.Value.PadWithJustification(propertyMetaData[i.Key].Justification, maxLengths[i.Key]));
+                agg.Add(i.Value.InternalReplaceLineEndings("<br/>").PadWithJustification(propertyMetaData[i.Key].Justification, maxLengths[i.Key]));
                 return agg;
             });
 

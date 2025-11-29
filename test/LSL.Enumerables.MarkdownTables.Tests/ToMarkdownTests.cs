@@ -14,7 +14,7 @@ public class ToMarkdownTests
 
         var result = new Stuff[]
         {
-            new(12, "Als", "Just some more"),
+            new(12, "Als", "Just some\r\nmore"),
             new(13, "Other", "An anonymous entity") 
         }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
         {
@@ -29,7 +29,7 @@ public class ToMarkdownTests
             """
             |  Age | Name   | Description          | The date    | A date                             |  The decimal |   The double |
             | ---: | :----- | :------------------- | :---------- | :--------------------------------- | -----------: | -----------: |
-            |   12 | Als    | Just some more       | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |       123456 |  £654,321.32 |
+            |   12 | Als    | Just some<br/>more   | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |       123456 |  £654,321.32 |
             |   13 | Other  | An anonymous entity  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |         1234 |    £4,321.00 |
 
             """.ReplaceLineEndings()
