@@ -25,12 +25,12 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
         var result = new StringBuilder();
         var headers = propertyMetaData
             .Where(p => p.IncludeInOutput)
-            .Select(p => options.HeaderTransformer(p.PropertyInfo));
+            .Select(p => new KeyValuePair<string, string>(p.PropertyInfo.Name, options.HeaderTransformer(p.PropertyInfo)));
         var maxLengths = BuildMaxLengths(extractedValues, headers);
 
         var justifiedHeaders = propertyMetaData
             .Where(m => m.IncludeInOutput)
-            .Select((item, index) => headers.ElementAt(index).PadWithJustification(item.Justification, maxLengths.ElementAt(index).Value));
+            .Select((item, index) => headers.ElementAt(index).Value.PadWithJustification(item.Justification, maxLengths.ElementAt(index).Value));
 
         var separators = propertyMetaData.Select((m, index) => m.Justification.CreateHeaderLine(maxLengths.ElementAt(index).Value));
         result.AppendLine($"| {string.Join(" | ", justifiedHeaders)} |");
@@ -41,9 +41,9 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
         return result.ToString();
     }
 
-    private static IDictionary<string, int> BuildMaxLengths(IEnumerable<IDictionary<string, string>> extractedValues, IEnumerable<string> headers)
+    private static IDictionary<string, int> BuildMaxLengths(IEnumerable<IDictionary<string, string>> extractedValues, IEnumerable<KeyValuePair<string, string>> headers)
     {
-        return extractedValues.Concat([headers.ToDictionary(h => h, h => h)])
+        return extractedValues.Concat([headers.ToDictionary(h => h.Key, h => h.Value)])
             .Aggregate(new Dictionary<string, int>(), (agg, i) =>
             {
                 foreach (var value in i)

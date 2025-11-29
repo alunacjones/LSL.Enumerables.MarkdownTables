@@ -22,24 +22,15 @@ public class ToMarkdownTests
         }
         .AddDefaultValueTransformers(includeFallback)
         .AddValueTransformer((o, next) => o?.ToString())
-        .UsePropertyMetaDataProvider(pi => 
-        { 
-            var result = new PropertyMetaData(pi, pi.IsSimpleType(), pi.GetJustification());
-            if (pi.Name == nameof(Stuff.TheDouble))
-            {
-                result.ValueTransformer = new NumberValueTransformer("£00,00.00");
-            }
-            return result;
-
-        })
+        .UsePropertyMetaDataProvider(pi => new(pi, pi.IsSimpleType(), pi.GetJustification(), pi.ResolveValueTransformerFromAttributes()))
         .UseHeaderTransformer(h => h.Name.Humanize()));
 
         result.Should().Be(
             """
-            |  Age | Name   | Description          | The date    | A date      | The decimal |   The double |
-            | ---: | :----- | :------------------- | :---------- | :---------- | ----------: | -----------: |
-            |   12 | Als    | Just some more       | 01/02/2010  | 02/03/2020  |  123,456.23 |  £654,321.32 |
-            |   13 | Other  | An anonymous entity  | 01/02/2010  | 02/03/2020  |    1,234.00 |    £4,321.00 |
+            |  Age | Name   | Description          | The date    | A date                             |  The decimal |   The double |
+            | ---: | :----- | :------------------- | :---------- | :--------------------------------- | -----------: | -----------: |
+            |   12 | Als    | Just some more       | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |       123456 |  £654,321.32 |
+            |   13 | Other  | An anonymous entity  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |         1234 |    £4,321.00 |
 
             """.ReplaceLineEndings()
         );
@@ -52,8 +43,14 @@ public class ToMarkdownTests
         public string Description { get; set; } = description;
         public Other Other { get; set; } = new("other");
         public DateTime TheDate { get; set; } = new DateTime(2010, 2, 1);
+
+        [DateTimeValueTransformer("o")]
         public DateTimeOffset ADate { get; set; } = new DateTimeOffset(new DateTime(2020, 3, 2));
+
+        [NumberValueTransformer("0")]
         public decimal TheDecimal { get; set; } = age == 12 ? 123456.23m : 1234m;
+
+        [NumberValueTransformer("£00,00.00")]
         public double TheDouble { get; set; } = age == 12 ? 654321.32 : 4321;
 
         public Other Child { get; set; } = new("asd");

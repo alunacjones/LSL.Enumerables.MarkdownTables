@@ -50,4 +50,25 @@ public static class PropertyInfoExtensions
         source.Equals(typeof(string)) || 
         source.Equals(typeof(decimal));
 
+    /// <summary>
+    /// Resolves a value transformer based on attributes on the property
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static IValueTransformer ResolveValueTransformerFromAttributes(this PropertyInfo source)
+    {
+        var numberAttribute = source.GetCustomAttribute<NumberValueTransformerAttribute>();
+        if (numberAttribute is not null)
+        {
+            return new NumberValueTransformer(numberAttribute.NumberFormat);
+        }
+
+        var dateTimeAttribute = source.GetCustomAttribute<DateTimeValueTransformerAttribute>();
+        if (dateTimeAttribute is not null)
+        {
+            return new DateTimeValueTransformer(dateTimeAttribute.DateTimeFormat);
+        }
+
+        return null;
+    }
 }

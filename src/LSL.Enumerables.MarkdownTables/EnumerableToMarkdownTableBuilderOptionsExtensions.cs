@@ -59,14 +59,39 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <summary>
     /// Add the default value transformers
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     The following value transformers are added:
+    /// </para>
+    /// <list type="table">
+    ///   <listheader>
+    ///       <term><see cref="DateTimeValueTransformer"/></term>
+    ///       <description>Formats a <see cref="DateTime"/> or <see cref="DateTimeOffset"/> as a short date. The format string can be specified with <paramref name="dateTimeFormat"/></description>
+    ///   </listheader>
+    ///   <item>
+    ///       <term><see cref="NumberValueTransformer" /></term>
+    ///       <description>Formats numbers prettily i.e. with thousand separators (only used for decimal and double types). The format string can be specified with <paramref name="numberFormat"/></description>
+    ///   </item>
+    ///   <item>
+    ///       <term><see cref="DefaultValueTransformer" /></term>
+    ///       <description>The fallback transformer that just converts the property value to a string. Can be omitted using <paramref name="includeFallback"/></description>
+    ///   </item>
+    /// </list>
+    /// </remarks>
     /// <param name="source"></param>
     /// <param name="includeFallback"></param>
+    /// <param name="numberFormat"></param>
+    /// <param name="dateTimeFormat"></param>
     /// <returns></returns>
-    public static EnumerableToMarkdownTableBuilderOptions AddDefaultValueTransformers(this EnumerableToMarkdownTableBuilderOptions source, bool includeFallback = true)
+    public static EnumerableToMarkdownTableBuilderOptions AddDefaultValueTransformers(
+        this EnumerableToMarkdownTableBuilderOptions source,
+        bool includeFallback = true,
+        string numberFormat = null,
+        string dateTimeFormat = null)
     {
         source.ValueTransformers.AddRange([
-            new DateTimeValueTransformer(),
-            new NumberValueTransformer()
+            new DateTimeValueTransformer(numberFormat),
+            new NumberValueTransformer(dateTimeFormat)
         ]);
 
         if (includeFallback) source.ValueTransformers.Add(new DefaultValueTransformer());

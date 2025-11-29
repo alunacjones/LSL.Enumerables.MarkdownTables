@@ -8,7 +8,12 @@ namespace LSL.Enumerables.MarkdownTables;
 /// <param name="propertyInfo"></param>
 /// <param name="includeInOutput"></param>
 /// <param name="justification"></param>
-public class PropertyMetaData(PropertyInfo propertyInfo, bool includeInOutput = true, Justification justification = Justification.Left)
+/// <param name="valueTransformer"></param>
+public class PropertyMetaData(
+    PropertyInfo propertyInfo,
+    bool includeInOutput = true,
+    Justification justification = Justification.Left,
+    IValueTransformer valueTransformer = null)
 {
     /// <summary>
     /// Determines if the property should be included in the output
@@ -28,5 +33,5 @@ public class PropertyMetaData(PropertyInfo propertyInfo, bool includeInOutput = 
     /// <summary>
     /// An optional <see cref="IValueTransformer"/> for the property
     /// </summary>
-    public IValueTransformer ValueTransformer { get; set; }
+    public IValueTransformer ValueTransformer { get; set; } = valueTransformer;
 }
