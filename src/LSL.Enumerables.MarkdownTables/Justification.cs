@@ -1,8 +1,17 @@
 namespace LSL.Enumerables.MarkdownTables;
 
+/// <summary>
+/// Table item justification
+/// </summary>
 public enum Justification
 {
+    /// <summary>
+    /// Left justified
+    /// </summary>
     Left,
-    Right,
-    Justified
+
+    /// <summary>
+    /// Right justified
+    /// </summary>
+    Right
 }

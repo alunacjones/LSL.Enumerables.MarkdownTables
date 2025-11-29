@@ -23,10 +23,8 @@ public static class MarkdownTableGeneratorEnumerableExtensions
     public static string ToMarkdownTable<T>(this IEnumerable<T> values, EnumerableToMarkdownTableBuilderOptions options = null) => 
         _factory.Build(options ?? _defaultOptions).CreateTable(values);
 
-    private static readonly EnumerableToMarkdownTableBuilderOptions _defaultOptions = new EnumerableToMarkdownTableBuilderOptions()
-    {
-        
-    };
+    private static readonly EnumerableToMarkdownTableBuilderOptions _defaultOptions = 
+        new EnumerableToMarkdownTableBuilderOptions().AddDefaultValueTransformers();
 }
 
 /// <summary>

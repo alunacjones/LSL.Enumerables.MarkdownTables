@@ -9,12 +9,8 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 public class EnumerableToMarkdownTableBuilderOptions
 {
-    internal Func<string, string> HeaderTransformer { get; set; } = header => header;
-    internal List<IValueTransformer> ValueTransformers { get; } = [
-        new DateTimeValueTransformer(),
-        new NumberValueTransformer(),
-        new DefaultValueTransformer()
-    ];
+    internal Func<PropertyInfo, string> HeaderTransformer { get; set; } = propertyInfo => propertyInfo.Name;
+    internal List<IValueTransformer> ValueTransformers { get; } = [];
 
     internal Func<PropertyInfo, PropertyMetaData> PropertyMetaDataProvider { get; set; } = p => new(p, p.IsSimpleType(), p.GetJustification());
 
@@ -22,5 +18,6 @@ public class EnumerableToMarkdownTableBuilderOptions
     /// The default to return if the enumerable that is being processed
     /// has no items
     /// </summary>
+    /// <remarks>Default to <see langword="null"/></remarks>s
     public string DefaultResultIfNoItems { get; set; } = null;
 }

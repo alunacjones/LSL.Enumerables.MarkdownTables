@@ -25,7 +25,7 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
         var result = new StringBuilder();
         var headers = propertyMetaData
             .Where(p => p.IncludeInOutput)
-            .Select(p => options.HeaderTransformer(p.PropertyInfo.Name));
+            .Select(p => options.HeaderTransformer(p.PropertyInfo));
         var maxLengths = BuildMaxLengths(extractedValues, headers);
 
         var justifiedHeaders = propertyMetaData
@@ -84,21 +84,4 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
             });
         });
     }
-}
-
-public static class JustificationExtensions
-{
-    public static string CreateHeaderLine(this Justification source, int maxLength) =>
-        source switch
-        {
-            Justification.Right => "---:".PadLeft(maxLength, '-'),
-            _ => ":---".PadRight(maxLength, '-')
-        };
-
-    public static string PadWithJustification(this string source, Justification justification, int maxLength) => 
-        justification switch
-        {
-            Justification.Right => source.PadLeft(maxLength),
-            _ => source.PadRight(maxLength)
-        };
 }

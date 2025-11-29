@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 
 namespace LSL.Enumerables.MarkdownTables;
 
@@ -16,13 +15,8 @@ public class NumberValueTransformer(string numberFormat = "00,00.00") : IValueTr
     {
         return value switch
         {
-            //int intValue => intValue.ToString(_numberFormat),
             double doubleValue => doubleValue.ToString(_numberFormat),
             decimal decimalValue => decimalValue.ToString(_numberFormat),
-            //long longValue => longValue.ToString(_numberFormat),
-            //byte byteValue => byteValue.ToString(_numberFormat),
-            //short shortValue => shortValue.ToString(_numberFormat),
-            //BigInteger bigIntegerValue => bigIntegerValue.ToString(_numberFormat),            
             _ => next()  
         };
     }

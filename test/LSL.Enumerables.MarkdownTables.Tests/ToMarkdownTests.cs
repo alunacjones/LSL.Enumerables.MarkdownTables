@@ -6,9 +6,12 @@ namespace LSL.Enumerables.MarkdownTables.Tests;
 
 public class ToMarkdownTests
 {
-    [Test]
-    public void Test()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Test(bool includeFallback)
     {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
         var result = new Stuff[]
         {
             new(12, "Als", "Just some more"),
@@ -16,7 +19,9 @@ public class ToMarkdownTests
         }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
         {
             DefaultResultIfNoItems = "nope"             
-        }.AddValueTransformer((o, next) => o?.ToString())
+        }
+        .AddDefaultValueTransformers(includeFallback)
+        .AddValueTransformer((o, next) => o?.ToString())
         .UsePropertyMetaDataProvider(pi => 
         { 
             var result = new PropertyMetaData(pi, pi.IsSimpleType(), pi.GetJustification());
@@ -27,14 +32,14 @@ public class ToMarkdownTests
             return result;
 
         })
-        .UseHeaderTransformer(h => h.Humanize()));
+        .UseHeaderTransformer(h => h.Name.Humanize()));
 
         result.Should().Be(
             """
-            |  Age | Name   | Description          | The date    | The decimal |   The double |
-            | ---: | :----- | :------------------- | :---------- | ----------: | -----------: |
-            |   12 | Als    | Just some more       | 01/02/2010  |  123,456.23 |  £654,321.32 |
-            |   13 | Other  | An anonymous entity  | 01/02/2010  |    1,234.00 |    £4,321.00 |
+            |  Age | Name   | Description          | The date    | A date      | The decimal |   The double |
+            | ---: | :----- | :------------------- | :---------- | :---------- | ----------: | -----------: |
+            |   12 | Als    | Just some more       | 01/02/2010  | 02/03/2020  |  123,456.23 |  £654,321.32 |
+            |   13 | Other  | An anonymous entity  | 01/02/2010  | 02/03/2020  |    1,234.00 |    £4,321.00 |
 
             """.ReplaceLineEndings()
         );
@@ -47,6 +52,7 @@ public class ToMarkdownTests
         public string Description { get; set; } = description;
         public Other Other { get; set; } = new("other");
         public DateTime TheDate { get; set; } = new DateTime(2010, 2, 1);
+        public DateTimeOffset ADate { get; set; } = new DateTimeOffset(new DateTime(2020, 3, 2));
         public decimal TheDecimal { get; set; } = age == 12 ? 123456.23m : 1234m;
         public double TheDouble { get; set; } = age == 12 ? 654321.32 : 4321;
 
