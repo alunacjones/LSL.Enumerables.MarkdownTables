@@ -9,18 +9,18 @@ This library provides methods to generate a markdown table from a strongly typed
 The following example uses all the defaults:
 
 ```csharp
-var result = new Stuff[]
+var result = new List<KeyValuePair<string, string>>
 {
-    new(12, "Als", "Just some\r\nmore things here"),
-    new(13, "Other", "An anonymous entity") 
+    new("Key1", "Value1"),
+    new("Key2", "Value2")
 }.ToMarkdownTable();
 
 /* result will contain:
 
-|  Age | Name   | Description                     | TheDate     | ADate                              |  TheDecimal |    TheDouble |
-| ---: | :----- | :------------------------------ | :---------- | :--------------------------------- | ----------: | -----------: |
-|   12 | Als    | Just some<br/>more things here  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |      123456 |  £654,321.32 |
-|   13 | Other  | An anonymous entity             | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+| Key   | Value   |
+| :---- | :------ |
+| Key1  | Value1  |
+| Key2  | Value2  |
 */
 ```
 
