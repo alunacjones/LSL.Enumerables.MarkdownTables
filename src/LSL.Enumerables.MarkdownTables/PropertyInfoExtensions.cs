@@ -76,6 +76,10 @@ public static class PropertyInfoExtensions
     /// <summary>
     /// Resolve output allowed from attributes and type
     /// </summary>
+    /// <remarks>
+    /// If the property is regarded a simple type or is decorated with the <see cref="IncludeInOutputAttribute"/>
+    /// then it will return <see langword="true"/>, otherwise it returns <see langword="false"/>
+    /// </remarks>
     /// <param name="source"></param>
     /// <returns></returns>
     public static bool ResolveOutputAllowedFromAttributesAndType(this PropertyInfo source) => 

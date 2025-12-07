@@ -8,6 +8,8 @@ public class EnumerableToMarkdownTableBuilderFactory : IEnumerableToMarkdownTabl
     /// <inheritdoc/>
     public IEnumerableToMarkdownTableBuilder Build(EnumerableToMarkdownTableBuilderOptions options = null) => 
         new EnumerableToMarkdownTableBuilder(
-            options ?? MarkdownTableGeneratorEnumerableExtensions._defaultOptions
+            options ?? MarkdownTableGeneratorEnumerableExtensions._defaultOptions,
+            PropertyMetaDataProviderRetriever.Instance,
+            ValueExtractor.Instance
         );
 }

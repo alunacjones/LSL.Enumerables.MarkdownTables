@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace LSL.Enumerables.MarkdownTables;
@@ -7,6 +8,8 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 public class EnumerableToMarkdownTableBuilderOptions
 {
+    internal Guid Id { get; } = Guid.NewGuid();
+    
     internal List<IValueTransformer> ValueTransformers { get; } = [];
 
     internal IPropertyMetaDataProvider PropertyMetaDataProvider { get; set; } = 
