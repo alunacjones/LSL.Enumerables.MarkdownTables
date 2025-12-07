@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
@@ -10,24 +11,35 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 public static class PropertyInfoExtensions
 {
+    private static readonly Lazy<ISet<Type>> _numberTypesLookup = new(
+        () => new HashSet<Type>
+        {
+            typeof(int),
+            typeof(decimal),
+            typeof(int?),
+            typeof(decimal?),
+            typeof(double),
+            typeof(double?),
+            typeof(long),
+            typeof(long?),
+            typeof(BigInteger),
+            typeof(BigInteger?),
+            typeof(byte),
+            typeof(byte?),
+            typeof(short),
+            typeof(short?),
+            typeof(float),
+            typeof(float?)            
+        }
+    );
+
     /// <summary>
     /// Determines the justification of a property based on its type
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
     public static Justification GetJustification(this PropertyInfo source) => 
-        source.PropertyType == typeof(int) ||
-            source.PropertyType == typeof(decimal) || 
-            source.PropertyType == typeof(int?) || 
-            source.PropertyType == typeof(decimal?) || 
-            source.PropertyType == typeof(double) || 
-            source.PropertyType == typeof(double?) || 
-            source.PropertyType == typeof(long) || 
-            source.PropertyType == typeof(long?) || 
-            source.PropertyType == typeof(BigInteger) || 
-            source.PropertyType == typeof(BigInteger?) || 
-            source.PropertyType == typeof(byte) || 
-            source.PropertyType == typeof(byte?)
+        _numberTypesLookup.Value.Contains(source.PropertyType)
             ? Justification.Right
             : Justification.Left;
 
@@ -55,30 +67,17 @@ public static class PropertyInfoExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static IValueTransformer ResolveValueTransformerFromAttributes(this PropertyInfo source)
-    {
-        var numberAttribute = source.GetCustomAttribute<NumberValueTransformerAttribute>();
-        if (numberAttribute is not null)
-        {
-            return new NumberValueTransformer(numberAttribute.NumberFormat);
-        }
-
-        var dateTimeAttribute = source.GetCustomAttribute<DateTimeValueTransformerAttribute>();
-        if (dateTimeAttribute is not null)
-        {
-            return new DateTimeValueTransformer(dateTimeAttribute.DateTimeFormat);
-        }
-
-        return null;
-    }
+    public static IValueTransformer ResolveValueTransformerFromAttributes(this PropertyInfo source) => 
+        source.GetFirstAttributeValueTransformer(c => c
+            .For<NumberValueTransformerAttribute>(a => new NumberValueTransformer(a.NumberFormat, a.IntegerFormat))
+            .For<DateTimeValueTransformerAttribute>(a => new DateTimeValueTransformer(a.DateTimeFormat))
+        );
 
     /// <summary>
     /// Resolve output allowed from attributes and type
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static bool ResolveOutputAllowedFromAttributesAndType(this PropertyInfo source)
-    {
-        return source.IsSimpleType() || source.GetCustomAttribute<IncludeInOutputAttribute>() is not null;
-    }
+    public static bool ResolveOutputAllowedFromAttributesAndType(this PropertyInfo source) => 
+        source.IsSimpleType() || source.GetCustomAttribute<IncludeInOutputAttribute>() is not null;
 }

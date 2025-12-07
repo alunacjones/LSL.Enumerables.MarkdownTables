@@ -9,11 +9,13 @@ namespace LSL.Enumerables.MarkdownTables;
 /// <param name="includeInOutput"></param>
 /// <param name="justification"></param>
 /// <param name="valueTransformer"></param>
+/// <param name="headerProvider"></param>
 public class PropertyMetaData(
     PropertyInfo propertyInfo,
     bool includeInOutput = true,
     Justification justification = Justification.Left,
-    IValueTransformer valueTransformer = null)
+    IValueTransformer valueTransformer = null,
+    IHeaderProvider headerProvider = null)
 {
     /// <summary>
     /// Determines if the property should be included in the output
@@ -34,4 +36,9 @@ public class PropertyMetaData(
     /// An optional <see cref="IValueTransformer"/> for the property
     /// </summary>
     public IValueTransformer ValueTransformer { get; set; } = valueTransformer;
+
+    /// <summary>
+    /// The header provider
+    /// </summary>
+    public IHeaderProvider HeaderProvider { get; set; } = headerProvider;
 }

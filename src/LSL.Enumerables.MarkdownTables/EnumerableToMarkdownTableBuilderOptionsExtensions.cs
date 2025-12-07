@@ -10,18 +10,6 @@ namespace LSL.Enumerables.MarkdownTables;
 public static class EnumerableToMarkdownTableBuilderOptionsExtensions
 {
     /// <summary>
-    /// Use the given header transformer delegate
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="headerTransformer"></param>
-    /// <returns></returns>
-    public static EnumerableToMarkdownTableBuilderOptions UseHeaderTransformer(this EnumerableToMarkdownTableBuilderOptions source, Func<PropertyInfo, string> headerTransformer)
-    {
-        source.AssertNotNull(nameof(source)).HeaderTransformer = headerTransformer.AssertNotNull(nameof(headerTransformer));
-        return source;
-    }
-
-    /// <summary>
     /// Add a value transformer
     /// </summary>
     /// <param name="source"></param>
@@ -50,7 +38,18 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <returns></returns>
     public static EnumerableToMarkdownTableBuilderOptions UsePropertyMetaDataProvider(
         this EnumerableToMarkdownTableBuilderOptions source,
-        Func<PropertyInfo, PropertyMetaData> propertyMetaDataProvider)
+        Func<PropertyInfo, PropertyMetaData> propertyMetaDataProvider) => 
+        source.UsePropertyMetaDataProvider(new DelegatingPropertyMetaDataProvider(propertyMetaDataProvider));
+
+    /// <summary>
+    /// Use the given property meta data provider
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="propertyMetaDataProvider"></param>
+    /// <returns></returns>
+    public static EnumerableToMarkdownTableBuilderOptions UsePropertyMetaDataProvider(
+        this EnumerableToMarkdownTableBuilderOptions source,
+        IPropertyMetaDataProvider propertyMetaDataProvider)
     {
         source.PropertyMetaDataProvider = propertyMetaDataProvider.AssertNotNull(nameof(propertyMetaDataProvider));
         return source;
@@ -70,38 +69,35 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     ///   </listheader>
     ///   <item>
     ///       <term><see cref="NumberValueTransformer" /></term>
-    ///       <description>Formats numbers prettily i.e. with thousand separators (only used for decimal and double types). The format string can be specified with <paramref name="numberFormat"/></description>
+    ///       <description>
+    ///         Formats numbers prettily i.e. with thousand separators. 
+    ///         The format strings for numeric and integer types can be specified 
+    ///         with <paramref name="numberFormat"/> and <paramref name="integerFormat"/>
+    ///       </description>
     ///   </item>
     ///   <item>
-    ///       <term><see cref="DefaultValueTransformer" /></term>
-    ///       <description>The fallback transformer that just converts the property value to a string. Can be omitted using <paramref name="includeFallback"/></description>
+    ///       <term><see cref="NullValueTransformer"/></term>
+    ///       <description>Formats a <see langword="null"/> value as <c>`null`</c></description>
     ///   </item>
     /// </list>
     /// </remarks>
     /// <param name="source"></param>
     /// <param name="numberFormat"></param>
+    /// <param name="integerFormat"></param>
     /// <param name="dateTimeFormat"></param>
     /// <returns></returns>
     public static EnumerableToMarkdownTableBuilderOptions AddDefaultValueTransformers(
         this EnumerableToMarkdownTableBuilderOptions source,
         string numberFormat = null,
+        string integerFormat = null,
         string dateTimeFormat = null)
     {
         source.ValueTransformers.AddRange([
-            new DateTimeValueTransformer(numberFormat),
-            new NumberValueTransformer(dateTimeFormat)
+            new DateTimeValueTransformer(dateTimeFormat),  
+            new NumberValueTransformer(numberFormat, integerFormat),
+            new NullValueTransformer()
         ]);
 
         return source;
     }
-}
-
-/// <summary>
-/// Delegating value transformer
-/// </summary>
-/// <param name="handlerDelegate"></param>
-public class DelegatingValueTransformer(HandlerDelegate<object, string> handlerDelegate) : IValueTransformer
-{
-    /// <inheritdoc/>
-    public string Transform(object value, Func<string> next) => handlerDelegate(value, next);
 }

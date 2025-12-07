@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
@@ -10,21 +10,20 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
 {
     public string CreateTable<T>(IEnumerable<T> items)
     {
-        items.AssertNotNull(nameof(items));
+        if (items.AssertNotNull(nameof(items)).Any() is false) return options.DefaultResultIfNoItems;
         
         var propertyMetaData = typeof(T).GetProperties().AsEnumerable()
-            .Select(options.PropertyMetaDataProvider)
+            .Select(options.PropertyMetaDataProvider.CreateMetaData)
             .Where(p => p.IncludeInOutput);
 
-        var propertyMetaDataDictionary = propertyMetaData.ToDictionary(m => m.PropertyInfo.Name, m => m);
-
-        if (items.Any() is false) return options.DefaultResultIfNoItems;
-
+        var propertyMetaDataDictionary = propertyMetaData.ToDictionary(m => m.PropertyInfo.Name, m => m);        
         var extractedValues = ExtractValues(items, propertyMetaData, options);
-
         var result = new StringBuilder();
         var headers = propertyMetaData
-            .Select(p => new KeyValuePair<string, string>(p.PropertyInfo.Name, options.HeaderTransformer(p.PropertyInfo)));
+            .Select(p => new KeyValuePair<string, string>(
+                p.PropertyInfo.Name,
+                (propertyMetaDataDictionary[p.PropertyInfo.Name].HeaderProvider ?? DefaultHeaderProvider.Instance)
+                .GetHeader(p.PropertyInfo)));
             
         var maxLengths = BuildMaxLengths(extractedValues, headers);
 
@@ -48,7 +47,10 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
             {
                 foreach (var value in i)
                 {
-                    agg[value.Key] = agg.TryGetValue(value.Key, out int propertyValue) ? Math.Max(propertyValue, value.Value.Length + 1) : value.Value.Length + 1;
+                    agg[value.Key] = new int[] 
+                    { 
+                        agg.InternalGetValueOrDefault(value.Key, 1), value.Value.Length + 1, 4 
+                    }.Max();
                 }
                 return agg;
             });
@@ -80,8 +82,11 @@ internal class EnumerableToMarkdownTableBuilder(EnumerableToMarkdownTableBuilder
             return properties.Aggregate(new Dictionary<string, string>(), (agg, i) =>
             {
                 var value = ((i.ValueTransformer is null 
-                    ? composite(i.PropertyInfo.GetValue(v)) : 
-                    i.ValueTransformer.Transform(i.PropertyInfo.GetValue(v), () => $"{i.PropertyInfo.GetValue(v)}")) ?? $"{i.PropertyInfo.GetValue(v)}")
+                    ? composite(i.PropertyInfo.GetValue(v))
+                    : i.ValueTransformer.Transform(
+                        i.PropertyInfo.GetValue(v),
+                        [ExcludeFromCodeCoverage] () => $"{i.PropertyInfo.GetValue(v)}")) 
+                        ?? $"{i.PropertyInfo.GetValue(v)}")
                     .InternalReplaceLineEndings();
 
                 agg.Add(i.PropertyInfo.Name, value);

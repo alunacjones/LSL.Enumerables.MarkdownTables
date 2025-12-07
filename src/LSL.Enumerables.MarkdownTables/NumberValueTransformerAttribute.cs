@@ -6,20 +6,17 @@ namespace LSL.Enumerables.MarkdownTables;
 /// Number value transformer attribute
 /// </summary>
 /// <param name="numberFormat"></param>
+/// <param name="integerFormat"></param>
 [AttributeUsage(AttributeTargets.Property)]
-public class NumberValueTransformerAttribute(string numberFormat) : Attribute
+public class NumberValueTransformerAttribute(string numberFormat, string integerFormat) : Attribute
 {
     /// <summary>
-    /// The number format for the property
+    /// The number format for the property if it is not an integer-type property.
     /// </summary>
     public string NumberFormat { get; } = numberFormat;
-}
 
-/// <summary>
-/// Marks a property as included in the markdown table output
-/// </summary>
-/// <remarks>This is more for use on complex types that would ordinarily be ignored by the default options</remarks>
-[AttributeUsage(AttributeTargets.Property)]
-public class IncludeInOutputAttribute : Attribute
-{
+    /// <summary>
+    /// The number format for integer-typed properties
+    /// </summary>
+    public string IntegerFormat { get; } = integerFormat;
 }

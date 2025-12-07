@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace LSL.Enumerables.MarkdownTables;
 
@@ -9,16 +7,17 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 public class EnumerableToMarkdownTableBuilderOptions
 {
-    internal Func<PropertyInfo, string> HeaderTransformer { get; set; } = propertyInfo => propertyInfo.Name;
     internal List<IValueTransformer> ValueTransformers { get; } = [];
 
-    internal Func<PropertyInfo, PropertyMetaData> PropertyMetaDataProvider { get; set; } = 
-        p => new(p, p.ResolveOutputAllowedFromAttributesAndType(), p.GetJustification(), p.ResolveValueTransformerFromAttributes());
+    internal IPropertyMetaDataProvider PropertyMetaDataProvider { get; set; } = 
+        new DelegatingPropertyMetaDataProvider(
+            p => new(p, p.ResolveOutputAllowedFromAttributesAndType(), p.GetJustification(), p.ResolveValueTransformerFromAttributes())
+        );
 
     /// <summary>
     /// The default to return if the enumerable that is being processed
     /// has no items
     /// </summary>
-    /// <remarks>Default to <see langword="null"/></remarks>s
+    /// <remarks>Defaults to <see langword="null"/></remarks>s
     public string DefaultResultIfNoItems { get; set; } = null;
 }
