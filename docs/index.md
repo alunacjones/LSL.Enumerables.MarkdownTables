@@ -8,7 +8,7 @@ This library provides methods to generate a markdown table from a strongly typed
 
 The following example uses all the defaults:
 
-```csharp
+```csharp <!-- REPLACE -->.*<!-- END:REPLACE -->
 var result = new List<KeyValuePair<string, string>>
 {
     new("Key1", "Value1"),
