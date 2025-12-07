@@ -16,18 +16,11 @@ internal class EnumerableToMarkdownTableBuilder(
         if (items.AssertNotNull(nameof(items)).Any() is false) return options.DefaultResultIfNoItems;
         
         var propertyMetaDataDictionary = propertyMetaDataProviderRetriever.GetPropertyMetaData<T>(options);
-        var extractedValues = valueExtractor.ExtractValues(items, propertyMetaDataDictionary.Select(kvp => kvp.Value), options);        
+        var extractedValues = valueExtractor.ExtractValues(items, propertyMetaDataDictionary, options);        
         var headers = propertyMetaDataDictionary.GenerateHeaders();            
         var maxLengths = extractedValues.GetMaxLengths(headers);
-
-        var justifiedHeaders = propertyMetaDataDictionary
-            .Select(kvp => kvp.Value)
-            .Where(m => m.IncludeInOutput)
-            .Select((item, index) => headers.ElementAt(index).Value.PadWithJustification(item.Justification, maxLengths.ElementAt(index).Value));
-
-        var separators = propertyMetaDataDictionary
-            .Select(kvp => kvp.Value)
-            .Select((m, index) => m.Justification.CreateHeaderLine(maxLengths.ElementAt(index).Value));
+        var justifiedHeaders = propertyMetaDataDictionary.GenerateJustifiedHeaders(headers, maxLengths);
+        var separators = propertyMetaDataDictionary.GenerateHeaderSeparators(maxLengths);
 
         return new StringBuilder()
             .AppendLine($"| {string.Join(" | ", justifiedHeaders)} |")

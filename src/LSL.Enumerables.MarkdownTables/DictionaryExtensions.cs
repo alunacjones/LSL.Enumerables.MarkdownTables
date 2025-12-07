@@ -31,4 +31,20 @@ internal static class DictionaryExtensions
                 }
                 return agg;
             });
+
+    public static IEnumerable<string> GenerateJustifiedHeaders(
+        this IDictionary<string, PropertyMetaData> source,
+        IEnumerable<KeyValuePair<string, string>> headers,
+        IDictionary<string, int> maxLengths) => 
+        source
+            .Select(kvp => kvp.Value)
+            .Where(m => m.IncludeInOutput)
+            .Select((item, index) => headers.ElementAt(index).Value.PadWithJustification(item.Justification, maxLengths.ElementAt(index).Value));
+
+    public static IEnumerable<string> GenerateHeaderSeparators(
+        this IDictionary<string, PropertyMetaData> source,
+        IDictionary<string, int> maxLengths) => 
+        source
+            .Select(kvp => kvp.Value)
+            .Select((m, index) => m.Justification.CreateHeaderLine(maxLengths.ElementAt(index).Value));
 }
