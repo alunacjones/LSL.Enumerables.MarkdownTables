@@ -8,24 +8,31 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 /// <param name="numberFormat"></param>
 /// <param name="integerFormat"></param>
-public class NumberValueTransformer(string numberFormat = "N2", string integerFormat = "N0") : IValueTransformer
+public class NumberValueTransformer(string numberFormat = null, string integerFormat = null) : IValueTransformer
 {
-    private readonly string _numberFormat = numberFormat ?? "N2";
-    private readonly string _integerFormat = integerFormat ?? "N0";
+    /// <summary>
+    /// The number format for <see cref="decimal"/>, <see cref="double"/> and <see cref="float"/> values
+    /// </summary>
+    public string NumberFormat => numberFormat ?? NumericFormats.DefaultNumberFormat;
+
+    /// <summary>
+    /// The number format for all integer types
+    /// </summary>
+    public string IntegerFormat => integerFormat ?? NumericFormats.DefaultIntegerFormat;
 
     /// <inheritdoc/>
     public string Transform(object value, Func<string> next)
     {
         return value switch
         {
-            double doubleValue => doubleValue.ToString(_numberFormat),
-            decimal decimalValue => decimalValue.ToString(_numberFormat),
-            float floatValue => floatValue.ToString(_numberFormat),
-            int intValue => intValue.ToString(_integerFormat),
-            long longValue => longValue.ToString(_integerFormat),
-            byte byteValue => byteValue.ToString(_integerFormat),
-            short shortValue => shortValue.ToString(_integerFormat),
-            BigInteger bigInteger => bigInteger.ToString(_integerFormat),
+            double doubleValue => doubleValue.ToString(NumberFormat),
+            decimal decimalValue => decimalValue.ToString(NumberFormat),
+            float floatValue => floatValue.ToString(NumberFormat),
+            int intValue => intValue.ToString(IntegerFormat),
+            long longValue => longValue.ToString(IntegerFormat),
+            byte byteValue => byteValue.ToString(IntegerFormat),
+            short shortValue => shortValue.ToString(IntegerFormat),
+            BigInteger bigInteger => bigInteger.ToString(IntegerFormat),
 
             _ => next()  
         };

@@ -71,6 +71,7 @@ public static class PropertyInfoExtensions
         source.GetFirstAttributeValueTransformer(c => c
             .For<NumberValueTransformerAttribute>(a => new NumberValueTransformer(a.NumberFormat, a.IntegerFormat))
             .For<DateTimeValueTransformerAttribute>(a => new DateTimeValueTransformer(a.DateTimeFormat))
+            .For<TimeDetectingDateTimeValueTransformerAttribute>(a => new TimeDetectingDateTimeValueTransformer(a.DateTimeFormat, a.DateOnlyFormat))
         );
 
     /// <summary>

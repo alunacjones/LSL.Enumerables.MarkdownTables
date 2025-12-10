@@ -6,17 +6,20 @@ namespace LSL.Enumerables.MarkdownTables;
 /// A <see cref="DateTime"/> and <see cref="DateTimeOffset"/> value transformer
 /// </summary>
 /// <param name="dateTimeFormat"></param>
-public class DateTimeValueTransformer(string dateTimeFormat = "d") : IValueTransformer
+public class DateTimeValueTransformer(string dateTimeFormat = null) : IValueTransformer
 {
-    private readonly string _dateTimeFormat = dateTimeFormat ?? "d";
+    /// <summary>
+    /// The date time format
+    /// </summary>    
+    public string DateTimeFormat => dateTimeFormat ?? DateTimeFormats.DefaultDateTimeFormat;
 
     /// <inheritdoc/>
     public string Transform(object value, Func<string> next)
     {
         return value switch
         {
-            DateTime dateTime => dateTime.ToString(_dateTimeFormat),
-            DateTimeOffset dateTimeOffset => dateTimeOffset.ToString(_dateTimeFormat),
+            DateTime dateTime => dateTime.ToString(DateTimeFormat),
+            DateTimeOffset dateTimeOffset => dateTimeOffset.ToString(DateTimeFormat),
             _ => next()
         };
     }

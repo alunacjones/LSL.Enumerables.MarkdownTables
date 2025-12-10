@@ -49,6 +49,36 @@ public class ToMarkdownTests
     }
 
     [Test]
+    public void TestWithNoTimeDetectingTransformer()
+    {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
+        var result = new Stuff[]
+        {
+            new(12, "Als", "Just some\r\nmore things here"),
+            new(13, "Other", "An anonymous entity"),
+            new(14, null, "An anonymous entity")
+        }.ToMarkdownTable(
+            new EnumerableToMarkdownTableBuilderOptions()
+            {
+                DefaultResultIfNoItems = "nope"             
+            }
+            .AddDefaultValueTransformers(useTimeDetectingDateTimeValueTransformer: false)
+        );
+
+        result.Should().Be(
+            """
+            |  Age | Name    | Description                     | Other                   | TheDate              | ADate                              |  TheDecimal |    TheDouble |
+            | ---: | :------ | :------------------------------ | :---------------------- | :------------------- | :--------------------------------- | ----------: | -----------: |
+            |   12 | Als     | Just some<br/>more things here  | Other { Name = other }  | 01/02/2010 00:00:00  | 2020-03-02T00:00:00.0000000+00:00  |      123456 |  £654,321.32 |
+            |   13 | Other   | An anonymous entity             | Other { Name = other }  | 01/02/2010 00:00:00  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+            |   14 | `null`  | An anonymous entity             | Other { Name = other }  | 01/02/2010 00:00:00  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+
+            """.ReplaceLineEndings()
+        );
+    }    
+
+    [Test]
     public void GivenANull_ForTheTransformer_ItShouldThrowAnException()
     {
         new Action(() => new Stuff[]
@@ -271,9 +301,9 @@ public class ToMarkdownTests
 
         result.Should().Be(
             """
-            |  IntValue |  ByteValue |  ShortValue |            LongValue |              BigInteger |   Float |  NullDecimal |
-            | --------: | ---------: | ----------: | -------------------: | ----------------------: | ------: | -----------: |
-            |       123 |         11 |      12,345 |  123,456,789,012,345 |  12,345,678,901,234,567 |  123.46 |       `null` |
+            |  IntValue |  ByteValue |  ShortValue |            LongValue |              BigInteger |   Float |  NullDecimal | ADate       |
+            | --------: | ---------: | ----------: | -------------------: | ----------------------: | ------: | -----------: | :---------- |
+            |       123 |         11 |      12,345 |  123,456,789,012,345 |  12,345,678,901,234,567 |  123.46 |       `null` | 01-10-2010  |
             
             """.ReplaceLineEndings()
         );              
@@ -289,6 +319,9 @@ public class ToMarkdownTests
         public BigInteger BigInteger => new(12345678901234567);
         public float Float => 123.456F;
         public decimal? NullDecimal => null;
+
+        [TimeDetectingDateTimeValueTransformer("dd-MM-yyyy", "dd-MM-yyyy")]
+        public DateTime ADate => new(2010, 10, 1);
 #pragma warning restore CA1822 // Mark members as static
     }
 

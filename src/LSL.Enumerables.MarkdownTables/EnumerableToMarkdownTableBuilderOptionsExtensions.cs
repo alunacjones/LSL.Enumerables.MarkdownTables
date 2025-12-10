@@ -85,15 +85,21 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <param name="numberFormat"></param>
     /// <param name="integerFormat"></param>
     /// <param name="dateTimeFormat"></param>
+    /// <param name="useTimeDetectingDateTimeValueTransformer">Uses the <see cref="TimeDetectingDateTimeValueTransformer"/></param>
+    /// <param name="dateOnlyFormat">This is only used if the <see cref="TimeDetectingDateTimeValueTransformer"/> is used</param>
     /// <returns></returns>
     public static EnumerableToMarkdownTableBuilderOptions AddDefaultValueTransformers(
         this EnumerableToMarkdownTableBuilderOptions source,
         string numberFormat = null,
         string integerFormat = null,
-        string dateTimeFormat = null)
+        string dateTimeFormat = null,
+        bool useTimeDetectingDateTimeValueTransformer = true,
+        string dateOnlyFormat = null)
     {
         source.ValueTransformers.AddRange([
-            new DateTimeValueTransformer(dateTimeFormat),  
+            useTimeDetectingDateTimeValueTransformer
+                ? new TimeDetectingDateTimeValueTransformer(dateTimeFormat, dateOnlyFormat)
+                : new DateTimeValueTransformer(dateTimeFormat),
             new NumberValueTransformer(numberFormat, integerFormat),
             new NullValueTransformer()
         ]);
