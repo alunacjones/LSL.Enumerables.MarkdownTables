@@ -12,7 +12,8 @@ The following example uses all the defaults:
 var result = new List<KeyValuePair<string, string>>
 {
     new("Key1", "Value1"),
-    new("Key2", "Value2")
+    new("Key2", "Value2"),
+    new("Key3", null)
 }.ToMarkdownTable();
 
 /* result will contain:
@@ -21,6 +22,7 @@ var result = new List<KeyValuePair<string, string>>
 | :---- | :------ |
 | Key1  | Value1  |
 | Key2  | Value2  |
+| Key3  | `null`  |
 */
 ```
 
