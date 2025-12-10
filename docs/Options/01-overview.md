@@ -8,4 +8,3 @@ The options for the mark down table builder can setup three main areas:
 | Property metadata provider     | Generates `PropertyMetaData` from a `PropertyInfo` instance                         |
 | [Default output](02-output.md) | The output that is returned when an empty enumerable is used. It defaults to `null` |
 
-## Defaults

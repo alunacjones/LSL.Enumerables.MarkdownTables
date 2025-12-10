@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LSL.Enumerables.MarkdownTables.Infrastructure;
 
 namespace LSL.Enumerables.MarkdownTables;
 
@@ -19,6 +20,21 @@ public static class MarkdownTableGeneratorEnumerableExtensions
     /// <returns></returns>
     public static string ToMarkdownTable<T>(this IEnumerable<T> values, EnumerableToMarkdownTableBuilderOptions options = null) => 
         _factory.Build(options ?? _defaultOptions).CreateTable(values);
+
+    /// <summary>
+    /// Converts an <see cref="IEnumerable{T}"/> to a markdown table, configuring the options with the given delegate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="values"></param>
+    /// <param name="configurator"></param>
+    /// <returns></returns>
+    public static string ToMarkdownTable<T>(this IEnumerable<T> values, Action<EnumerableToMarkdownTableBuilderOptions> configurator)
+    {
+        var options = new EnumerableToMarkdownTableBuilderOptions();
+        configurator.AssertNotNull(nameof(configurator))(options);
+
+        return _factory.Build(options).CreateTable(values);
+    }
 
     internal static readonly EnumerableToMarkdownTableBuilderOptions _defaultOptions = 
         new EnumerableToMarkdownTableBuilderOptions().AddDefaultValueTransformers();

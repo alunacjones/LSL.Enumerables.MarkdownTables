@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
 
@@ -121,5 +122,22 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
         configurator?.Invoke(options);
 
         return source.UsePropertyMetaDataProvider(new DefaultPropertyMetaDataProvider(options));
+    }
+
+    /// <summary>
+    /// Set the string value to return if the <see cref="IEnumerable{T}"/> is empty.
+    /// </summary>
+    /// <remarks>
+    /// The default value is <see langword="null" />
+    /// </remarks>
+    /// <param name="source"></param>
+    /// <param name="emptyResult"></param>
+    /// <returns></returns>
+    public static EnumerableToMarkdownTableBuilderOptions UseEmptyResult(
+        this EnumerableToMarkdownTableBuilderOptions source,
+        string emptyResult)
+    {
+        source.DefaultResultIfNoItems = emptyResult;
+        return source;
     }
 }

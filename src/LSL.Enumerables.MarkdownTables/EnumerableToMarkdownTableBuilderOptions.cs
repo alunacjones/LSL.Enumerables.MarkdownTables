@@ -17,5 +17,5 @@ public class EnumerableToMarkdownTableBuilderOptions
     /// has no items
     /// </summary>
     /// <remarks>Defaults to <see langword="null"/></remarks>s
-    public string DefaultResultIfNoItems { get; set; } = null;
+    internal string DefaultResultIfNoItems { get; set; } = null;
 }

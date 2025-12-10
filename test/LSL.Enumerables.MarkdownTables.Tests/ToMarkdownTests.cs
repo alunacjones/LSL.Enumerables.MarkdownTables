@@ -20,11 +20,8 @@ public class ToMarkdownTests
             new(12, "Als", "Just some\r\nmore things here"),
             new(13, "Other", "An anonymous entity"),
             new(14, null, "An anonymous entity")
-        }.ToMarkdownTable(
-            new EnumerableToMarkdownTableBuilderOptions()
-            {
-                DefaultResultIfNoItems = "nope"             
-            }
+        }.ToMarkdownTable(c => c
+            .UseEmptyResult("nope")
             .AddDefaultValueTransformers()
             .AddValueTransformer((o, next) => o?.ToString())
             .UsePropertyMetaDataProvider(pi => new(
@@ -57,11 +54,8 @@ public class ToMarkdownTests
             new(12, "Als", "Just some\r\nmore things here"),
             new(13, "Other", "An anonymous entity"),
             new(14, null, "An anonymous entity")
-        }.ToMarkdownTable(
-            new EnumerableToMarkdownTableBuilderOptions()
-            {
-                DefaultResultIfNoItems = "nope"             
-            }
+        }.ToMarkdownTable(c => c
+            .UseEmptyResult("nowt")
             .AddDefaultValueTransformers(useTimeDetectingDateTimeValueTransformer: false)
         );
 
@@ -197,7 +191,7 @@ public class ToMarkdownTests
     public void GivenACallWithNoItems_ItShouldReturnTheDefaultValue()
     {
         Array.Empty<Stuff>()
-            .ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions { DefaultResultIfNoItems = "nowt" })
+            .ToMarkdownTable(c => c.UseEmptyResult("nowt"))
             .Should().Be("nowt");
     }
     
@@ -210,7 +204,7 @@ public class ToMarkdownTests
             .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
             .AddSingleton(sp => sp
                 .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build(new EnumerableToMarkdownTableBuilderOptions()
+                .Build(c => c
                     .AddDefaultValueTransformers()
                     .UsePropertyMetaDataProvider(pi => new(pi, pi.ResolveOutputAllowedFromAttributesAndType(), pi.GetJustification()))
                 ))
@@ -348,7 +342,7 @@ public class ToMarkdownTests
         var result = new InclusionAndExclusion[]
         {
             new(1, "a-name", "a-description")
-        }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
+        }.ToMarkdownTable(c => c
             .UseDefaultPropertyMetaDataProvider(c => c
                 .IncludeProperties(nameof(InclusionAndExclusion.Name))
                 .ExcludeProperties(nameof(InclusionAndExclusion.Description))
