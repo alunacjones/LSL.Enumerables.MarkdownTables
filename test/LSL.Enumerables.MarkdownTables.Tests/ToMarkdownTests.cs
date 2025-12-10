@@ -204,6 +204,8 @@ public class ToMarkdownTests
     [Test]
     public void WhenRegisteredInAServiceCollection_ItShouldResolveToTheExpectedConfiguration()
     {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
         var provider = new ServiceCollection()
             .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
             .AddSingleton(sp => sp
@@ -235,6 +237,8 @@ public class ToMarkdownTests
     [Test]
     public void WhenRegisteredInAServiceCollectionWithDefaults_ItShouldResolveToTheExpectedConfiguration()
     {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
         var provider = new ServiceCollection()
             .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
             .AddSingleton(sp => sp
@@ -263,6 +267,8 @@ public class ToMarkdownTests
     [Test]
     public void WhenRegisteredInAServiceCollectionWithDefaultsWIthAnId_ItShouldResolveToTheExpectedConfiguration()
     {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+        
         var provider = new ServiceCollection()
             .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
             .AddSingleton(sp => sp

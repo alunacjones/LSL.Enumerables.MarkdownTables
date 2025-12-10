@@ -31,7 +31,6 @@ var result = new List<KeyValuePair<string, string>>
 * Header names are the names of each property
 * `DateTime` and `DateTimeOffset` properties use the `G` format string (e.g. en-GB would show `20/02/2020 23:00:00` for 20th Feb 2020 at 11PM)
     * If there is no time portion then the `d` format string is used to only output the date.
-    * >**NOTE**: This behaviour can be overridden
 * Numeric data types will use the `N2` format string (e.g. en-GB would show `2,123.22` for a decimal value of `2123.22`)
     * all intrinsic integer values will use the `N0` format string
 * `null` values will be output as `` `null` ``
