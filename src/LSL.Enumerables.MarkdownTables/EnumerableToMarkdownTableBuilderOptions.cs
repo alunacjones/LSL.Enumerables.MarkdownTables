@@ -9,13 +9,8 @@ namespace LSL.Enumerables.MarkdownTables;
 public class EnumerableToMarkdownTableBuilderOptions
 {
     internal Guid Id { get; } = Guid.NewGuid();
-    
     internal List<IValueTransformer> ValueTransformers { get; } = [];
-
-    internal IPropertyMetaDataProvider PropertyMetaDataProvider { get; set; } = 
-        new DelegatingPropertyMetaDataProvider(
-            p => new(p, p.ResolveOutputAllowedFromAttributesAndType(), p.GetJustification(), p.ResolveValueTransformerFromAttributes())
-        );
+    internal IPropertyMetaDataProvider PropertyMetaDataProvider { get; set; } = new DefaultPropertyMetaDataProvider(new());
 
     /// <summary>
     /// The default to return if the enumerable that is being processed

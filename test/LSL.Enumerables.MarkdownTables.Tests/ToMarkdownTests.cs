@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using FluentAssertions;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
@@ -309,43 +308,55 @@ public class ToMarkdownTests
         );              
     }
 
-    public class AllNumbers
+    [Test]
+    public void UsingDefaultsWithACustomisedDefaultMetaDataProviderExcludingFields_ShouldProduceTheExpectedResult()
     {
-#pragma warning disable CA1822 // Mark members as static
-        public int IntValue => 123;
-        public byte ByteValue => 11;
-        public short ShortValue => 12345;
-        public long LongValue => 123456789012345;
-        public BigInteger BigInteger => new(12345678901234567);
-        public float Float => 123.456F;
-        public decimal? NullDecimal => null;
+        using var disposableCulture = new DisposableBritishCultureInfo();
 
-        [TimeDetectingDateTimeValueTransformer("dd-MM-yyyy", "dd-MM-yyyy")]
-        public DateTime ADate => new(2010, 10, 1);
-#pragma warning restore CA1822 // Mark members as static
+        var result = new InclusionAndExclusion[]
+        {
+            new(1, "a-name", "a-description")
+        }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
+            .UseDefaultPropertyMetaDataProvider(c => c
+                .ForClass<InclusionAndExclusion>(c => c
+                    .ExcludeProperties(c => c.Description))
+            )
+        );
+
+        result.Should().Be(
+            """
+            |   Id | Name    |
+            | ---: | :------ |
+            |    1 | a-name  |
+            
+            """.ReplaceLineEndings()
+        );        
     }
 
-    public class Stuff(int age, string name, string description)
+    [Test]
+    public void UsingDefaultsWithACustomisedDefaultMetaDataProviderIncludingFields_ShouldProduceTheExpectedResult()
     {
-        public int Age { get; set; } = age;
-        public string Name { get; set; } = name;
-        public string Description { get; set; } = description;
+        using var disposableCulture = new DisposableBritishCultureInfo();
 
-        [IncludeInOutput]
-        public Other Other { get; set; } = new("other");
-        public DateTime TheDate { get; set; } = new DateTime(2010, 2, 1);
+        var result = new InclusionAndExclusion[]
+        {
+            new(1, "a-name", "a-description")
+        }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
+            .UseDefaultPropertyMetaDataProvider(c => c
+                .IncludeProperties(nameof(InclusionAndExclusion.Name))
+                .ExcludeProperties(nameof(InclusionAndExclusion.Description))
+                .ForClass<InclusionAndExclusion>(c => c
+                    .IncludeProperties(c => c.Id, c => c.Description))
+            )
+        );
 
-        [DateTimeValueTransformer("o")]
-        public DateTimeOffset ADate { get; set; } = new DateTimeOffset(new DateTime(2020, 3, 2));
-
-        [NumberValueTransformer("0", "C")]
-        public decimal TheDecimal { get; set; } = age == 12 ? 123456.23m : 1234m;
-
-        [NumberValueTransformer("C2", "C")]
-        public double TheDouble { get; set; } = age == 12 ? 654321.32 : 4321;
-
-        public Other Child { get; set; } = new("asd");
+        result.Should().Be(
+            """
+            |   Id | Name    |
+            | ---: | :------ |
+            |    1 | a-name  |
+            
+            """.ReplaceLineEndings()
+        );        
     }
-
-    public record Other(string Name);
 }

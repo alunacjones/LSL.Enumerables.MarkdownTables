@@ -106,4 +106,20 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
 
         return source;
     }
+
+    /// <summary>
+    /// Use and configure the default property meta data provider
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="configurator"></param>
+    /// <returns></returns>
+    public static EnumerableToMarkdownTableBuilderOptions UseDefaultPropertyMetaDataProvider(
+        this EnumerableToMarkdownTableBuilderOptions source,
+        Action<DefaultPropertyMetaDataProviderOptions> configurator = null)
+    {
+        var options = new DefaultPropertyMetaDataProviderOptions();
+        configurator?.Invoke(options);
+
+        return source.UsePropertyMetaDataProvider(new DefaultPropertyMetaDataProvider(options));
+    }
 }
