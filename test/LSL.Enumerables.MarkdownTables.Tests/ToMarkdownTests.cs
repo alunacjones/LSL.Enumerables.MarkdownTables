@@ -268,7 +268,7 @@ public class ToMarkdownTests
     public void WhenRegisteredInAServiceCollectionWithDefaultsWIthAnId_ItShouldResolveToTheExpectedConfiguration()
     {
         using var disposableCulture = new DisposableBritishCultureInfo();
-        
+
         var provider = new ServiceCollection()
             .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
             .AddSingleton(sp => sp
@@ -324,6 +324,7 @@ public class ToMarkdownTests
             new(1, "a-name", "a-description")
         }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
             .UseDefaultPropertyMetaDataProvider(c => c
+                .UseHeaderProvider(pi => $"*{pi.Name}*")
                 .ForClass<InclusionAndExclusion>(c => c
                     .ExcludeProperties(c => c.Description))
             )
@@ -331,9 +332,9 @@ public class ToMarkdownTests
 
         result.Should().Be(
             """
-            |   Id | Name    |
-            | ---: | :------ |
-            |    1 | a-name  |
+            |  *Id* | *Name*  |
+            | ----: | :------ |
+            |     1 | a-name  |
             
             """.ReplaceLineEndings()
         );        

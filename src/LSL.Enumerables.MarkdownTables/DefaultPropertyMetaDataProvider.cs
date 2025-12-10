@@ -9,5 +9,6 @@ internal class DefaultPropertyMetaDataProvider(DefaultPropertyMetaDataProviderOp
             propertyInfo,
             options.ResolveInclusionOfProperty(propertyInfo),
             propertyInfo.GetJustification(),
-            propertyInfo.ResolveValueTransformerFromAttributes());
+            propertyInfo.ResolveValueTransformerFromAttributes(),
+            options.HeaderProvider);
 }

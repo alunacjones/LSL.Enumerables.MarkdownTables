@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
 
 namespace LSL.Enumerables.MarkdownTables;
@@ -17,7 +18,7 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="names"></param>
     /// <returns></returns>
     public static DefaultPropertyMetaDataProviderOptions IncludeProperties(this DefaultPropertyMetaDataProviderOptions source, params string[] names) => 
-        source.IncludeProperties(names.AsEnumerable());
+        source.IncludeProperties(names.AssertNotNull(nameof(names)).AsEnumerable());
 
     /// <summary>
     /// Adds included properties
@@ -27,7 +28,7 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <returns></returns>
     public static DefaultPropertyMetaDataProviderOptions IncludeProperties(this DefaultPropertyMetaDataProviderOptions source, IEnumerable<string> names)
     {
-        source.IncludedProperties.AddRange(names);
+        source.AssertNotNull(nameof(source)).IncludedProperties.AddRange(names.AssertNotNull(nameof(names)));
         return source;
     }
 
@@ -38,7 +39,7 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="names"></param>
     /// <returns></returns>
     public static DefaultPropertyMetaDataProviderOptions ExcludeProperties(this DefaultPropertyMetaDataProviderOptions source, params string[] names) => 
-        source.ExcludeProperties(names.AsEnumerable());
+        source.ExcludeProperties(names.AssertNotNull(nameof(names)).AsEnumerable());
 
     /// <summary>
     /// Adds excluded properties
@@ -48,7 +49,7 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <returns></returns>
     public static DefaultPropertyMetaDataProviderOptions ExcludeProperties(this DefaultPropertyMetaDataProviderOptions source, IEnumerable<string> names)
     {
-        source.ExcludedProperties.AddRange(names);
+        source.AssertNotNull(nameof(source)).ExcludedProperties.AddRange(names.AssertNotNull(nameof(names)));
         return source;
     }
 
@@ -63,9 +64,35 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
         this DefaultPropertyMetaDataProviderOptions source,
         Action<IStronglyTypedDefaultPropertyMetaDataProviderOptions<T>> configurator)
     {
-        var options = new StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(source);
+        var options = new StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(source.AssertNotNull(nameof(source)));
         configurator.AssertNotNull(nameof(configurator))(options);
 
         return source;
     }
+
+    /// <summary>
+    /// Use the provided <see cref="IHeaderProvider"/> for header names
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="headerProvider"></param>
+    /// <returns></returns>
+    public static DefaultPropertyMetaDataProviderOptions UseHeaderProvider(
+        this DefaultPropertyMetaDataProviderOptions source,
+        IHeaderProvider headerProvider)
+    {
+        source.AssertNotNull(nameof(source)).HeaderProvider = headerProvider.AssertNotNull(nameof(headerProvider));
+        return source;
+    }
+
+    /// <summary>
+    /// Use the provided delegate for header names
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="headerProvider"></param>
+    /// <returns></returns>
+    public static DefaultPropertyMetaDataProviderOptions UseHeaderProvider(
+        this DefaultPropertyMetaDataProviderOptions source,
+        Func<PropertyInfo, string> headerProvider
+    ) => 
+    source.UseHeaderProvider(new DelegatingHeaderProvider(headerProvider.AssertNotNull(nameof(headerProvider))));
 }

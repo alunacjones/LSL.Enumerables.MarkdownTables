@@ -11,6 +11,7 @@ public sealed class DefaultPropertyMetaDataProviderOptions
 {
     internal HashSet<string> IncludedProperties = [];
     internal HashSet<string> ExcludedProperties = [];
+    internal IHeaderProvider HeaderProvider = DefaultHeaderProvider.Instance;
 
     internal bool ResolveInclusionOfProperty(PropertyInfo propertyInfo)
     {
