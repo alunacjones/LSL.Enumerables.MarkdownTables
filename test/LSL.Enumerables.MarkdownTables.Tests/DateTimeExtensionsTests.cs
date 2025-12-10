@@ -21,6 +21,8 @@ public class DateTimeExtensionsTests
         int millisecond,
         string expectedOutput)
     {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+        
         var date = new DateTime(year, month, day, hour, minute, second, millisecond);
 
         date
