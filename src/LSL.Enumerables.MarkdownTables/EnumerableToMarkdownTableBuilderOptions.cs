@@ -16,6 +16,6 @@ public class EnumerableToMarkdownTableBuilderOptions
     /// The default to return if the enumerable that is being processed
     /// has no items
     /// </summary>
-    /// <remarks>Defaults to <see langword="null"/></remarks>s
+    /// <remarks>Defaults to <see langword="null"/></remarks>
     internal string DefaultResultIfNoItems { get; set; } = null;
 }
