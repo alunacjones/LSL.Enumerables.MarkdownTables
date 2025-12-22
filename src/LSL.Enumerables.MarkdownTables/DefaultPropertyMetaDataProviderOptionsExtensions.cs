@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
 
@@ -17,7 +18,8 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="names"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions IncludeProperties(this DefaultPropertyMetaDataProviderOptions source, params string[] names) => 
+    public static T IncludeProperties<T>(this T source, params string[] names) 
+        where T : BaseDefaultPropertyMetaDataProviderOptions => 
         source.IncludeProperties(names.AssertNotNull(nameof(names)).AsEnumerable());
 
     /// <summary>
@@ -26,7 +28,8 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="names"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions IncludeProperties(this DefaultPropertyMetaDataProviderOptions source, IEnumerable<string> names)
+    public static T IncludeProperties<T>(this T source, IEnumerable<string> names)
+        where T : BaseDefaultPropertyMetaDataProviderOptions
     {
         source.AssertNotNull(nameof(source)).IncludedProperties.AddRange(names.AssertNotNull(nameof(names)));
         return source;
@@ -38,7 +41,8 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="names"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions ExcludeProperties(this DefaultPropertyMetaDataProviderOptions source, params string[] names) => 
+    public static T ExcludeProperties<T>(this T source, params string[] names) 
+        where T : BaseDefaultPropertyMetaDataProviderOptions => 
         source.ExcludeProperties(names.AssertNotNull(nameof(names)).AsEnumerable());
 
     /// <summary>
@@ -47,7 +51,8 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="names"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions ExcludeProperties(this DefaultPropertyMetaDataProviderOptions source, IEnumerable<string> names)
+    public static T ExcludeProperties<T>(this T source, IEnumerable<string> names)
+        where T : BaseDefaultPropertyMetaDataProviderOptions
     {
         source.AssertNotNull(nameof(source)).ExcludedProperties.AddRange(names.AssertNotNull(nameof(names)));
         return source;
@@ -69,6 +74,57 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
 
         return source;
     }
+    
+    /// <summary>
+    /// Include the provided properties in the output
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="propertyExpressions"></param>
+    /// <returns></returns>
+    public static DefaultPropertyMetaDataProviderOptions<T> IncludeProperties<T>(this DefaultPropertyMetaDataProviderOptions<T> source, IEnumerable<Expression<Func<T, object>>> propertyExpressions)
+    {
+        var options = new StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(source.AssertNotNull(nameof(source)));
+        options.IncludeProperties(propertyExpressions);
+
+        return source;
+    }
+
+    /// <summary>
+    /// Include the provided properties in the output
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="propertyExpressions"></param>
+    /// <returns></returns>
+    public static DefaultPropertyMetaDataProviderOptions<T> IncludeProperties<T>(this DefaultPropertyMetaDataProviderOptions<T> source, params Expression<Func<T, object>>[] propertyExpressions) => 
+        source.IncludeProperties(propertyExpressions.AsEnumerable());
+
+    /// <summary>
+    /// Exclude the provided properties from the output
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="propertyExpressions"></param>
+    /// <returns></returns>
+    public static DefaultPropertyMetaDataProviderOptions<T> ExcludeProperties<T>(this DefaultPropertyMetaDataProviderOptions<T> source, IEnumerable<Expression<Func<T, object>>> propertyExpressions)
+    {
+        var options = new StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(source.AssertNotNull(nameof(source)));
+        options.ExcludeProperties(propertyExpressions);
+
+        return source;        
+    }
+
+    /// <summary>
+    /// Exclude the provided properties from the output
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="propertyExpressions"></param>
+    /// <returns></returns>
+
+    public static DefaultPropertyMetaDataProviderOptions<T> ExcludeProperties<T>(this DefaultPropertyMetaDataProviderOptions<T> source, params Expression<Func<T, object>>[] propertyExpressions) => 
+        source.ExcludeProperties(propertyExpressions.AsEnumerable());
 
     /// <summary>
     /// Use the provided <see cref="IHeaderProvider"/> for header names
@@ -76,9 +132,10 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="headerProvider"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions UseHeaderProvider(
-        this DefaultPropertyMetaDataProviderOptions source,
+    public static T UseHeaderProvider<T>(
+        this T source,
         IHeaderProvider headerProvider)
+        where T : BaseDefaultPropertyMetaDataProviderOptions
     {
         source.AssertNotNull(nameof(source)).HeaderProvider = headerProvider.AssertNotNull(nameof(headerProvider));
         return source;
@@ -90,9 +147,9 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <param name="source"></param>
     /// <param name="headerProvider"></param>
     /// <returns></returns>
-    public static DefaultPropertyMetaDataProviderOptions UseHeaderProvider(
-        this DefaultPropertyMetaDataProviderOptions source,
-        Func<PropertyInfo, string> headerProvider
-    ) => 
-    source.UseHeaderProvider(new DelegatingHeaderProvider(headerProvider.AssertNotNull(nameof(headerProvider))));
+    public static T UseHeaderProvider<T>(
+        this T source,
+        Func<PropertyInfo, string> headerProvider) 
+        where T : BaseDefaultPropertyMetaDataProviderOptions => 
+        source.UseHeaderProvider(new DelegatingHeaderProvider(headerProvider.AssertNotNull(nameof(headerProvider))));
 }

@@ -11,7 +11,7 @@ internal class PropertyMetaDataProviderRetriever
     private static readonly IDictionary<string, IDictionary<string, PropertyMetaData>> _providers = 
         new ConcurrentDictionary<string, IDictionary<string, PropertyMetaData>>();
 
-    internal IDictionary<string, PropertyMetaData> GetPropertyMetaData<T>(EnumerableToMarkdownTableBuilderOptions options)
+    internal IDictionary<string, PropertyMetaData> GetPropertyMetaData<T>(BaseEnumerableToMarkdownTableBuilderOptions options)
     {
         var type = typeof(T);
         var key = $"{options.Id}.{type.FullName}";

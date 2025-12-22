@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace LSL.Enumerables.MarkdownTables;
 
-internal class DefaultPropertyMetaDataProvider(DefaultPropertyMetaDataProviderOptions options) : IPropertyMetaDataProvider
+internal class DefaultPropertyMetaDataProvider(BaseDefaultPropertyMetaDataProviderOptions options) : IPropertyMetaDataProvider
 {
     public PropertyMetaData CreateMetaData(PropertyInfo propertyInfo) => 
         new(

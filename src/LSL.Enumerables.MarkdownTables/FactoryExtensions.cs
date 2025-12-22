@@ -21,4 +21,18 @@ public static class FactoryExtensions
 
         return source.Build(options);
     }
+
+    /// <summary>
+    /// Builds a strongly-typed markdown table builder instance configured with <paramref name="configurator"/>
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="configurator"></param>
+    /// <returns></returns>
+    public static IEnumerableToMarkdownTableBuilder<T> Build<T>(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator)
+    {
+        var options = new EnumerableToMarkdownTableBuilderOptions<T>();
+        configurator.AssertNotNull(nameof(configurator))(options);
+
+        return source.Build(options);
+    }    
 }

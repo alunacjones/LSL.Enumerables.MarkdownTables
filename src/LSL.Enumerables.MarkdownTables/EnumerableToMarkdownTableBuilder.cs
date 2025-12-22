@@ -6,12 +6,30 @@ using LSL.Enumerables.MarkdownTables.Infrastructure;
 namespace LSL.Enumerables.MarkdownTables;
 
 internal class EnumerableToMarkdownTableBuilder(
-    EnumerableToMarkdownTableBuilderOptions options,
+    BaseEnumerableToMarkdownTableBuilderOptions options,
     PropertyMetaDataProviderRetriever propertyMetaDataProviderRetriever,
-    ValueExtractor valueExtractor) : IEnumerableToMarkdownTableBuilder
+    ValueExtractor valueExtractor) 
+    : BaseEnumerableToMarkdownTableBuilder(options, propertyMetaDataProviderRetriever, valueExtractor), IEnumerableToMarkdownTableBuilder
 {
     /// <inheritdoc/>
-    public string CreateTable<T>(IEnumerable<T> items)
+    public string CreateTable<T>(IEnumerable<T> items) => InternalCreateTable(items);
+}
+
+internal class EnumerableToMarkdownTableBuilder<T>(
+    BaseEnumerableToMarkdownTableBuilderOptions options,
+    PropertyMetaDataProviderRetriever propertyMetaDataProviderRetriever,
+    ValueExtractor valueExtractor) 
+    : BaseEnumerableToMarkdownTableBuilder(options, propertyMetaDataProviderRetriever, valueExtractor),  IEnumerableToMarkdownTableBuilder<T>
+{
+    public string CreateTable(IEnumerable<T> items) => InternalCreateTable(items);
+}
+
+internal abstract class BaseEnumerableToMarkdownTableBuilder(
+    BaseEnumerableToMarkdownTableBuilderOptions options,
+    PropertyMetaDataProviderRetriever propertyMetaDataProviderRetriever,
+    ValueExtractor valueExtractor)
+{
+    protected string InternalCreateTable<T>(IEnumerable<T> items)
     {
         if (items.AssertNotNull(nameof(items)).Any() is false) return options.DefaultResultIfNoItems;
         
@@ -26,6 +44,6 @@ internal class EnumerableToMarkdownTableBuilder(
             .AppendLine($"| {string.Join(" | ", justifiedHeaders)} |")
             .AppendLine($"| {string.Join(" | ", separators)} |")
             .AddRecords(extractedValues, maxLengths, propertyMetaDataDictionary)
-            .ToString();
-    }
+            .ToString();        
+    }   
 }

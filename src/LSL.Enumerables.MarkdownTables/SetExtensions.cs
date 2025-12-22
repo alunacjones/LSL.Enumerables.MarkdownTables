@@ -1,16 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LSL.Enumerables.MarkdownTables;
 
 internal static class SetExtensions
 {
-    public static ISet<T> AddRange<T>(this ISet<T> source, IEnumerable<T> values)
-    {
-        foreach (var value in  values)
+    public static ISet<T> AddRange<T>(this ISet<T> source, IEnumerable<T> values) => 
+        values.Aggregate(source, (agg, i) =>
         {
-            source.Add(value);
-        }
-
-        return source;
-    }
+            agg.Add(i);
+            return agg;
+        });
 }

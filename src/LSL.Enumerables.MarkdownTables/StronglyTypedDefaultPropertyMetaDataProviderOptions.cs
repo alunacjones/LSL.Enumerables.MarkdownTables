@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace LSL.Enumerables.MarkdownTables;
 
-internal class StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(DefaultPropertyMetaDataProviderOptions parentOptions) : IStronglyTypedDefaultPropertyMetaDataProviderOptions<T>
+internal class StronglyTypedDefaultPropertyMetaDataProviderOptions<T>(BaseDefaultPropertyMetaDataProviderOptions parentOptions) : IStronglyTypedDefaultPropertyMetaDataProviderOptions<T>
 {
     public IStronglyTypedDefaultPropertyMetaDataProviderOptions<T> ExcludeProperties(IEnumerable<Expression<Func<T, object>>> propertyExpressions)
     {

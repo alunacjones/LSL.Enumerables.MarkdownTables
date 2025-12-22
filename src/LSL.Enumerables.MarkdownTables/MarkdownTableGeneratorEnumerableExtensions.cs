@@ -19,7 +19,7 @@ public static class MarkdownTableGeneratorEnumerableExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     public static string ToMarkdownTable<T>(this IEnumerable<T> values, EnumerableToMarkdownTableBuilderOptions options = null) => 
-        _factory.Build(options ?? _defaultOptions).CreateTable(values);
+        _factory.Build(options ?? DefaultOptions()).CreateTable(values);
 
     /// <summary>
     /// Converts an <see cref="IEnumerable{T}"/> to a markdown table, configuring the options with the given delegate.
@@ -36,8 +36,11 @@ public static class MarkdownTableGeneratorEnumerableExtensions
         return _factory.Build(options).CreateTable(values);
     }
 
-    internal static readonly EnumerableToMarkdownTableBuilderOptions _defaultOptions = 
+    internal static EnumerableToMarkdownTableBuilderOptions DefaultOptions() => 
         new EnumerableToMarkdownTableBuilderOptions().AddDefaultValueTransformers();
+
+    internal static EnumerableToMarkdownTableBuilderOptions<T> DefaultStronglyTypesOptions<T>() =>
+        new EnumerableToMarkdownTableBuilderOptions<T>().AddDefaultValueTransformers();
 }
 
 /// <summary>

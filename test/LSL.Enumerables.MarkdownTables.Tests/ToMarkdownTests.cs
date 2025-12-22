@@ -259,6 +259,74 @@ public class ToMarkdownTests
     }
 
     [Test]
+    public void WhenStronglyTypedRegisteredInAServiceCollectionWithOverriddenDefaults_ItShouldResolveToTheExpectedConfiguration()
+    {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
+        var provider = new ServiceCollection()
+            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
+            .AddSingleton(sp => sp
+                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
+                .Build<Stuff>(c => c.UseDefaultPropertyMetaDataProvider(c => c
+                    .ExcludeProperties(x => x.Description)
+                    .IncludeProperties(x => x.Name, x => x.Age))))
+            .BuildServiceProvider();
+
+        var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder<Stuff>>()
+            .CreateTable(
+            [
+                new(12, "Als", "Just some\r\nmore things here"),
+                new(13, "Other", "An anonymous entity") 
+            ]);
+
+        result.Should().Be(
+            """
+            |  Age | Name   |
+            | ---: | :----- |
+            |   12 | Als    |
+            |   13 | Other  |
+
+            """.ReplaceLineEndings()
+        );        
+    }
+
+    [Test]
+    public void WhenStronglyTypedRegisteredInAServiceCollectionWithDefaults_ItShouldResolveToTheExpectedConfiguration()
+    {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
+        var provider = new ServiceCollection()
+            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
+            .AddSingleton(sp => sp
+                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
+                .Build<Stuff>())
+            .BuildServiceProvider();
+
+        var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder<Stuff>>()
+            .CreateTable(
+            [
+                new(12, "Als", "Just some\r\nmore things here"),
+                new(13, "Other", "An anonymous entity") 
+            ]);
+
+        result.Should().Be(
+            """
+            |  Age | Name   | Description                     | Other                   | TheDate     | ADate                              |  TheDecimal |    TheDouble |
+            | ---: | :----- | :------------------------------ | :---------------------- | :---------- | :--------------------------------- | ----------: | -----------: |
+            |   12 | Als    | Just some<br/>more things here  | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |      123456 |  £654,321.32 |
+            |   13 | Other  | An anonymous entity             | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+
+            """.ReplaceLineEndings()
+        );        
+    }
+
+    [Test]
+    public void FactoryInstance_ShouldNotBeNull()
+    {
+        EnumerableToMarkdownTableBuilderFactory.Instance.Should().NotBeNull();
+    }
+
+    [Test]
     public void WhenRegisteredInAServiceCollectionWithDefaultsWIthAnId_ItShouldResolveToTheExpectedConfiguration()
     {
         using var disposableCulture = new DisposableBritishCultureInfo();

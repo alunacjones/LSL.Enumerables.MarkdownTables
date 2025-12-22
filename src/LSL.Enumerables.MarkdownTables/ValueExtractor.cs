@@ -11,7 +11,7 @@ internal class ValueExtractor
     internal IEnumerable<IDictionary<string, string>> ExtractValues<T>(
         IEnumerable<T> values,
         IEnumerable<KeyValuePair<string, PropertyMetaData>> properties,
-        EnumerableToMarkdownTableBuilderOptions options)
+        BaseEnumerableToMarkdownTableBuilderOptions options)
     {
         var composite = CompositeHandlerFactory.CreateCompositeHandler(
             options.ValueTransformers.Select(v => new HandlerDelegate<object, string>(v.Transform))).Handler;
