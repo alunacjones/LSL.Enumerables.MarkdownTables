@@ -34,32 +34,4 @@ public static class ServicesEnumerableToMarkdownTableBuilderExtensions
 
         return source;
     }
-
-    /// <summary>
-    /// Adds an enumerable to markdown table builder
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A <see cref="IEnumerableToMarkdownTableBuilder"/> should be injected into any consuming
-    /// classes.
-    /// </para>
-    /// <para>
-    /// If this method has already been called then the configured instance
-    /// on the last call will always be resolved.
-    /// </para>
-    /// </remarks>
-    /// <param name="source"></param>
-    /// <param name="configurator"></param>
-    /// <returns></returns>
-    public static IServicesEnumerableToMarkdownTableBuilder WithBuilder(
-        this IServicesEnumerableToMarkdownTableBuilder source,
-        Action<EnumerableToMarkdownTableBuilderOptions> configurator = null)
-    {
-        source.Services.AddSingleton(sp => sp
-            .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-            .Build(configurator)
-        );
-
-        return source;        
-    }
 }

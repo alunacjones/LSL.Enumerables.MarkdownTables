@@ -1,3 +1,4 @@
+using System;
 using LSL.Enumerables.MarkdownTables;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -15,10 +16,16 @@ public static class MarkdownServiceCollectionExtensions
     /// to markdown table factory
     /// </summary>
     /// <param name="source"></param>
+    /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IServicesEnumerableToMarkdownTableBuilder AddEnumerablesToMarkdown(this IServiceCollection source)
+    public static IServicesEnumerableToMarkdownTableBuilder AddEnumerablesToMarkdown(this IServiceCollection source, Action<EnumerableToMarkdownTableBuilderOptions> configurator = null)
     {
         source.TryAddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>();
+
+        source.TryAddSingleton(sp => sp
+            .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
+            .Build(configurator));
+
         return new ServicesEnumerableToMarkdownTableBuilder(source);
     }
 }

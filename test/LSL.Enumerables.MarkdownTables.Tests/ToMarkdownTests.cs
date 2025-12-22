@@ -235,7 +235,6 @@ public class ToMarkdownTests
 
         var provider = new ServiceCollection()
             .AddEnumerablesToMarkdown()
-            .WithBuilder()
             .Services
             .BuildServiceProvider();
 
