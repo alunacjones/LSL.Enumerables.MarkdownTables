@@ -234,10 +234,9 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
-            .AddSingleton(sp => sp
-                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build())
+            .AddEnumerablesToMarkdown()
+            .WithBuilder()
+            .Services
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder>()
@@ -264,12 +263,11 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
-            .AddSingleton(sp => sp
-                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build<Stuff>(c => c.UseDefaultPropertyMetaDataProvider(c => c
-                    .ExcludeProperties(x => x.Description)
-                    .IncludeProperties(x => x.Name, x => x.Age))))
+            .AddEnumerablesToMarkdown()
+            .AddBuilder<Stuff>(c => c.UseDefaultPropertyMetaDataProvider(c => c
+                .ExcludeProperties(x => x.Description)
+                .IncludeProperties(x => x.Name, x => x.Age)))
+            .Services
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder<Stuff>>()
@@ -296,10 +294,9 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
-            .AddSingleton(sp => sp
-                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build<Stuff>())
+            .AddEnumerablesToMarkdown()
+            .AddBuilder<Stuff>()
+            .Services
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder<Stuff>>()
@@ -332,7 +329,8 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
+            .AddEnumerablesToMarkdown()
+            .Services
             .AddSingleton(sp => sp
                 .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
                 .Build())

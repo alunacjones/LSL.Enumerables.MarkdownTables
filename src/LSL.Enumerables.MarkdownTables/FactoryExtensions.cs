@@ -14,12 +14,17 @@ public static class FactoryExtensions
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IEnumerableToMarkdownTableBuilder Build(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions> configurator)
+    public static IEnumerableToMarkdownTableBuilder Build(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions> configurator = null)
     {
-        var options = new EnumerableToMarkdownTableBuilderOptions();
-        configurator.AssertNotNull(nameof(configurator))(options);
+        return source.Build(configurator is null ? null : ConfigureOptions(configurator));
 
-        return source.Build(options);
+        static EnumerableToMarkdownTableBuilderOptions ConfigureOptions(Action<EnumerableToMarkdownTableBuilderOptions> configurator)
+        {
+            var options = new EnumerableToMarkdownTableBuilderOptions();
+            configurator.Invoke(options);
+
+            return options;
+        }
     }
 
     /// <summary>
@@ -28,11 +33,16 @@ public static class FactoryExtensions
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IEnumerableToMarkdownTableBuilder<T> Build<T>(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator)
+    public static IEnumerableToMarkdownTableBuilder<T> Build<T>(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator = null)
     {
-        var options = new EnumerableToMarkdownTableBuilderOptions<T>();
-        configurator.AssertNotNull(nameof(configurator))(options);
+        return source.Build(configurator is null ? null : ConfigureOptions(configurator));
 
-        return source.Build(options);
+        static EnumerableToMarkdownTableBuilderOptions<T> ConfigureOptions(Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator)
+        {
+            var options = new EnumerableToMarkdownTableBuilderOptions<T>();
+            configurator.Invoke(options);
+
+            return options;
+        }
     }    
 }
