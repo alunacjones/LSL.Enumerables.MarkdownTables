@@ -34,3 +34,8 @@ internal class ValueExtractor
         });        
     }
 }
+
+internal class DictionaryValueExtractor
+{
+    
+}

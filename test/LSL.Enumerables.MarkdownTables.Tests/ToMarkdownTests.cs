@@ -201,13 +201,11 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>()
-            .AddSingleton(sp => sp
-                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build(c => c
-                    .AddDefaultValueTransformers()
-                    .UsePropertyMetaDataProvider(pi => new(pi, pi.ResolveOutputAllowedFromAttributesAndType(), pi.GetJustification()))
-                ))
+            .AddEnumerablesToMarkdown(c => c
+                .AddDefaultValueTransformers()
+                .UsePropertyMetaDataProvider(pi => new(pi, pi.ResolveOutputAllowedFromAttributesAndType(), pi.GetJustification()))
+            )
+            .Services
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder>()
@@ -316,6 +314,34 @@ public class ToMarkdownTests
         );        
     }
 
+   [Test]
+    public void Dictionary_WhenRegisteredInAServiceCollectionWithDefaults_ItShouldResolveToTheExpectedConfiguration()
+    {
+        using var disposableCulture = new DisposableBritishCultureInfo();
+
+        var provider = new ServiceCollection()
+            .AddEnumerablesToMarkdown()
+            .Services
+            .BuildServiceProvider();
+
+        var result = provider.GetRequiredService<IEnumerableOfDictionaryToMarkdownTableBuilder>()
+            .CreateTable(
+            [
+                new Dictionary<string, object> { ["Name"] = "Als" },
+                new Dictionary<string, object> { ["Name"] = "Other" }
+            ]);
+
+        result.Should().Be(
+            """
+            |  Age | Name   | Description                     | Other                   | TheDate     | ADate                              |  TheDecimal |    TheDouble |
+            | ---: | :----- | :------------------------------ | :---------------------- | :---------- | :--------------------------------- | ----------: | -----------: |
+            |   12 | Als    | Just some<br/>more things here  | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |      123456 |  £654,321.32 |
+            |   13 | Other  | An anonymous entity             | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+
+            """.ReplaceLineEndings()
+        );        
+    }    
+
     [Test]
     public void FactoryInstance_ShouldNotBeNull()
     {
@@ -330,9 +356,6 @@ public class ToMarkdownTests
         var provider = new ServiceCollection()
             .AddEnumerablesToMarkdown()
             .Services
-            .AddSingleton(sp => sp
-                .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
-                .Build())
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableToMarkdownTableBuilder>()
@@ -377,7 +400,6 @@ public class ToMarkdownTests
     public void UsingDefaultsWithACustomisedDefaultMetaDataProviderExcludingFields_ShouldProduceTheExpectedResult()
     {
         using var disposableCulture = new DisposableBritishCultureInfo();
-
         var result = new InclusionAndExclusion[]
         {
             new(1, "a-name", "a-description")

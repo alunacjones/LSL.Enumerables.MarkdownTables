@@ -42,3 +42,31 @@ public class PropertyMetaData(
     /// </summary>
     public IHeaderProvider HeaderProvider { get; set; } = headerProvider;
 }
+
+public interface IPropertyMetaData
+{
+    /// <summary>
+    /// Determines if the property should be included in the output
+    /// </summary>
+    public bool IncludeInOutput { get; }
+
+    /// <summary>
+    /// The justification of the item
+    /// </summary>
+    public Justification Justification { get; }
+
+    /// <summary>
+    /// The <see cref="PropertyInfo"/>
+    /// </summary>
+    public PropertyInfo PropertyInfo { get; }
+
+    /// <summary>
+    /// An optional <see cref="IValueTransformer"/> for the property
+    /// </summary>
+    public IValueTransformer ValueTransformer { get; set; }
+
+    /// <summary>
+    /// The header provider
+    /// </summary>
+    public IHeaderProvider HeaderProvider { get; set; }
+}

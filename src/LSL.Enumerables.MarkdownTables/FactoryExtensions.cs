@@ -14,18 +14,8 @@ public static class FactoryExtensions
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IEnumerableToMarkdownTableBuilder Build(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions> configurator = null)
-    {
-        return source.Build(configurator is null ? null : ConfigureOptions(configurator));
-
-        static EnumerableToMarkdownTableBuilderOptions ConfigureOptions(Action<EnumerableToMarkdownTableBuilderOptions> configurator)
-        {
-            var options = new EnumerableToMarkdownTableBuilderOptions();
-            configurator.Invoke(options);
-
-            return options;
-        }
-    }
+    public static IEnumerableToMarkdownTableBuilder Build(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions> configurator = null) => 
+        source.Build(configurator.ConfigureOptions(new EnumerableToMarkdownTableBuilderOptions()));
 
     /// <summary>
     /// Builds a strongly-typed markdown table builder instance configured with <paramref name="configurator"/>
@@ -33,16 +23,15 @@ public static class FactoryExtensions
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IEnumerableToMarkdownTableBuilder<T> Build<T>(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator = null)
-    {
-        return source.Build(configurator is null ? null : ConfigureOptions(configurator));
+    public static IEnumerableToMarkdownTableBuilder<T> Build<T>(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator = null) => 
+        source.Build(configurator.ConfigureOptions(new EnumerableToMarkdownTableBuilderOptions<T>()));
 
-        static EnumerableToMarkdownTableBuilderOptions<T> ConfigureOptions(Action<EnumerableToMarkdownTableBuilderOptions<T>> configurator)
-        {
-            var options = new EnumerableToMarkdownTableBuilderOptions<T>();
-            configurator.Invoke(options);
-
-            return options;
-        }
-    }    
+    /// <summary>
+    /// Builds a dictionary-based markdown table builder instance configured with <paramref name="configurator"/>
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="configurator"></param>
+    /// <returns></returns>
+    public static IEnumerableOfDictionaryToMarkdownTableBuilder BuildForDictionary(this IEnumerableToMarkdownTableBuilderFactory source, Action<EnumerableOfDictionaryToMarkdownTableBuilderOptions> configurator = null) => 
+        source.BuildForDictionary(configurator.ConfigureOptions(new EnumerableOfDictionaryToMarkdownTableBuilderOptions()));
 }

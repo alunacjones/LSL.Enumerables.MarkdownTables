@@ -17,7 +17,7 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <param name="valueTransformer"></param>
     /// <returns></returns>
     public static T AddValueTransformer<T>(this T source, IValueTransformer valueTransformer)
-        where T : BaseEnumerableToMarkdownTableBuilderOptions
+        where T : BaseEnumerableToMarkdownTableBuilderOptionsNoMetaData
     {
         source.AssertNotNull(nameof(source)).ValueTransformers.Add(valueTransformer.AssertNotNull(nameof(valueTransformer)));
         return source;
@@ -30,7 +30,7 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     /// <param name="handlerDelegate"></param>
     /// <returns></returns>
     public static T AddValueTransformer<T>(this T source, HandlerDelegate<object, string> handlerDelegate) 
-        where T : BaseEnumerableToMarkdownTableBuilderOptions =>         
+        where T : BaseEnumerableToMarkdownTableBuilderOptionsNoMetaData =>         
         source.AddValueTransformer(new DelegatingValueTransformer(handlerDelegate.AssertNotNull(nameof(handlerDelegate))));
 
     /// <summary>
@@ -100,7 +100,7 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
         string dateTimeFormat = null,
         bool useTimeDetectingDateTimeValueTransformer = true,
         string dateOnlyFormat = null)
-        where T : BaseEnumerableToMarkdownTableBuilderOptions
+        where T : BaseEnumerableToMarkdownTableBuilderOptionsNoMetaData
     {
         source.ValueTransformers.AddRange([
             useTimeDetectingDateTimeValueTransformer
@@ -157,7 +157,7 @@ public static class EnumerableToMarkdownTableBuilderOptionsExtensions
     public static T UseEmptyResult<T>(
         this T source,
         string emptyResult)
-        where T : BaseEnumerableToMarkdownTableBuilderOptions
+        where T : BaseEnumerableToMarkdownTableBuilderOptionsNoMetaData
     {
         source.DefaultResultIfNoItems = emptyResult;
         return source;

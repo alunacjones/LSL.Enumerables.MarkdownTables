@@ -17,8 +17,12 @@ public static class MarkdownServiceCollectionExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <param name="configurator"></param>
+    /// <param name="dictionaryBuilderConfigurator"></param>
     /// <returns></returns>
-    public static IServicesEnumerableToMarkdownTableBuilder AddEnumerablesToMarkdown(this IServiceCollection source, Action<EnumerableToMarkdownTableBuilderOptions> configurator = null)
+    public static IServicesEnumerableToMarkdownTableBuilder AddEnumerablesToMarkdown(
+        this IServiceCollection source,
+        Action<EnumerableToMarkdownTableBuilderOptions> configurator = null,
+        Action<EnumerableOfDictionaryToMarkdownTableBuilderOptions> dictionaryBuilderConfigurator = null)
     {
         source.TryAddSingleton<IEnumerableToMarkdownTableBuilderFactory, EnumerableToMarkdownTableBuilderFactory>();
 
@@ -26,6 +30,10 @@ public static class MarkdownServiceCollectionExtensions
             .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
             .Build(configurator));
 
+        source.TryAddSingleton(sp => sp
+            .GetRequiredService<IEnumerableToMarkdownTableBuilderFactory>()
+            .BuildForDictionary(dictionaryBuilderConfigurator));
+            
         return new ServicesEnumerableToMarkdownTableBuilder(source);
     }
 }

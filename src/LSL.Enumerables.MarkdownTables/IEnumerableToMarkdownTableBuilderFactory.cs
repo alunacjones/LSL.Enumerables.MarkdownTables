@@ -17,5 +17,5 @@ public interface IEnumerableToMarkdownTableBuilderFactory
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    IEnumerableToMarkdownTableBuilder<T> Build<T>(EnumerableToMarkdownTableBuilderOptions<T> options = null);    
+    IEnumerableToMarkdownTableBuilder<T> Build<T>(EnumerableToMarkdownTableBuilderOptions<T> options = null);
 }

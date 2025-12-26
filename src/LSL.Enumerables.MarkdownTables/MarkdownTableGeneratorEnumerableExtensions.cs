@@ -41,6 +41,9 @@ public static class MarkdownTableGeneratorEnumerableExtensions
 
     internal static EnumerableToMarkdownTableBuilderOptions<T> DefaultStronglyTypesOptions<T>() =>
         new EnumerableToMarkdownTableBuilderOptions<T>().AddDefaultValueTransformers();
+
+    internal static EnumerableOfDictionaryToMarkdownTableBuilderOptions DefaultDictionaryOptions() =>
+        new EnumerableOfDictionaryToMarkdownTableBuilderOptions().AddDefaultValueTransformers();
 }
 
 /// <summary>
