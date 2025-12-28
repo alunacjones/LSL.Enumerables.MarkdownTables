@@ -12,5 +12,5 @@ public interface IHeaderProvider
     /// </summary>
     /// <param name="propertyInfo"></param>
     /// <returns></returns>
-    public string GetHeader(PropertyInfo propertyInfo);
+    public string GetHeader(PropertyMetaData propertyInfo);
 }

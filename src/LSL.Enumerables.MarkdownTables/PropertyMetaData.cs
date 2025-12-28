@@ -1,17 +1,19 @@
-using System.Reflection;
+using System;
 
 namespace LSL.Enumerables.MarkdownTables;
 
 /// <summary>
 /// Property meta data
 /// </summary>
-/// <param name="propertyInfo"></param>
+/// <param name="propertyName"></param>
+/// <param name="propertyValueGetter"></param>
 /// <param name="includeInOutput"></param>
 /// <param name="justification"></param>
 /// <param name="valueTransformer"></param>
 /// <param name="headerProvider"></param>
-public class PropertyMetaData(
-    PropertyInfo propertyInfo,
+public sealed class PropertyMetaData(
+    string propertyName,
+    Func<object, object> propertyValueGetter,
     bool includeInOutput = true,
     Justification justification = Justification.Left,
     IValueTransformer valueTransformer = null,
@@ -28,10 +30,15 @@ public class PropertyMetaData(
     public Justification Justification { get; } =  justification;
 
     /// <summary>
-    /// The <see cref="PropertyInfo"/>
+    /// The name of the property
     /// </summary>
-    public PropertyInfo PropertyInfo { get; } = propertyInfo;
+    public string PropertyName { get; } = propertyName;
 
+    /// <summary>
+    /// The property value getter
+    /// </summary>
+    public Func<object, object> PropertyValueGetter { get; } = propertyValueGetter;
+    
     /// <summary>
     /// An optional <see cref="IValueTransformer"/> for the property
     /// </summary>
@@ -41,32 +48,4 @@ public class PropertyMetaData(
     /// The header provider
     /// </summary>
     public IHeaderProvider HeaderProvider { get; set; } = headerProvider;
-}
-
-public interface IPropertyMetaData
-{
-    /// <summary>
-    /// Determines if the property should be included in the output
-    /// </summary>
-    public bool IncludeInOutput { get; }
-
-    /// <summary>
-    /// The justification of the item
-    /// </summary>
-    public Justification Justification { get; }
-
-    /// <summary>
-    /// The <see cref="PropertyInfo"/>
-    /// </summary>
-    public PropertyInfo PropertyInfo { get; }
-
-    /// <summary>
-    /// An optional <see cref="IValueTransformer"/> for the property
-    /// </summary>
-    public IValueTransformer ValueTransformer { get; set; }
-
-    /// <summary>
-    /// The header provider
-    /// </summary>
-    public IHeaderProvider HeaderProvider { get; set; }
 }

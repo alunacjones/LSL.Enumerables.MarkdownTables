@@ -15,6 +15,7 @@ public class EnumerableToMarkdownTableBuilderFactory : IEnumerableToMarkdownTabl
         new EnumerableToMarkdownTableBuilder(
             options ?? MarkdownTableGeneratorEnumerableExtensions.DefaultOptions(),
             PropertyMetaDataProviderRetriever.Instance,
+            DictionaryMetaDataProviderRetriever.Instance,
             ValueExtractor.Instance
         );
 
@@ -23,6 +24,7 @@ public class EnumerableToMarkdownTableBuilderFactory : IEnumerableToMarkdownTabl
         new EnumerableToMarkdownTableBuilder<T>(
             options ?? MarkdownTableGeneratorEnumerableExtensions.DefaultStronglyTypesOptions<T>(),
             PropertyMetaDataProviderRetriever.Instance,
+            DictionaryMetaDataProviderRetriever.Instance,
             ValueExtractor.Instance
         );
 }

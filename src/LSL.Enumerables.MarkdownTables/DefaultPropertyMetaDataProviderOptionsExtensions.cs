@@ -149,7 +149,7 @@ public static class DefaultPropertyMetaDataProviderOptionsExtensions
     /// <returns></returns>
     public static T UseHeaderProvider<T>(
         this T source,
-        Func<PropertyInfo, string> headerProvider) 
+        Func<PropertyMetaData, string> headerProvider) 
         where T : BaseDefaultPropertyMetaDataProviderOptions => 
         source.UseHeaderProvider(new DelegatingHeaderProvider(headerProvider.AssertNotNull(nameof(headerProvider))));
 }

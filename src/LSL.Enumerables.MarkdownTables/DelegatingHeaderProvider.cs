@@ -1,13 +1,12 @@
 using System;
-using System.Reflection;
 
 namespace LSL.Enumerables.MarkdownTables;
 
 /// <summary>
 /// A delegating header provider
 /// </summary>
-public class DelegatingHeaderProvider(Func<PropertyInfo, string> @delegate) : IHeaderProvider
+public class DelegatingHeaderProvider(Func<PropertyMetaData, string> @delegate) : IHeaderProvider
 {
     /// <inheritdoc/>
-    public string GetHeader(PropertyInfo propertyInfo) => @delegate(propertyInfo);
+    public string GetHeader(PropertyMetaData propertyInfo) => @delegate(propertyInfo);
 }

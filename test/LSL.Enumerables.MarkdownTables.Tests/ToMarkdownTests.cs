@@ -13,7 +13,7 @@ public class ToMarkdownTests
     {
         using var disposableCulture = new DisposableBritishCultureInfo();
 
-        var humanizeHeaderProvider = new DelegatingHeaderProvider(p => p.Name.Humanize());
+        var humanizeHeaderProvider = new DelegatingHeaderProvider(p => p.PropertyName.Humanize());
 
         var result = new Stuff[]
         {
@@ -25,7 +25,8 @@ public class ToMarkdownTests
             .AddDefaultValueTransformers()
             .AddValueTransformer((o, next) => o?.ToString())
             .UsePropertyMetaDataProvider(pi => new(
-                pi, 
+                pi.Name,
+                pi.GetValue, 
                 pi.IsSimpleType(), 
                 pi.GetJustification(), 
                 pi.ResolveValueTransformerFromAttributes(),
@@ -149,11 +150,12 @@ public class ToMarkdownTests
             new("Key2", Guid.Parse("b42d88ba-f19f-4c98-995d-9f80f99c5518"))
         }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
             .UsePropertyMetaDataProvider(p => new(
-                p, 
+                p.Name,
+                p.GetValue, 
                 true, 
                 Justification.Left,
                 new DelegatingValueTransformer((v, _) => $"{v}"),
-                headerProvider: new DelegatingHeaderProvider(pi => $"{pi.Name}!"))
+                headerProvider: new DelegatingHeaderProvider(pi => $"{pi.PropertyName}!"))
         ));
 
         result.Should().Be("""
@@ -203,7 +205,7 @@ public class ToMarkdownTests
         var provider = new ServiceCollection()
             .AddEnumerablesToMarkdown(c => c
                 .AddDefaultValueTransformers()
-                .UsePropertyMetaDataProvider(pi => new(pi, pi.ResolveOutputAllowedFromAttributesAndType(), pi.GetJustification()))
+                .UsePropertyMetaDataProvider(pi => new(pi.Name, pi.GetValue, pi.ResolveOutputAllowedFromAttributesAndType(), pi.GetJustification()))
             )
             .Services
             .BuildServiceProvider();
@@ -320,23 +322,23 @@ public class ToMarkdownTests
         using var disposableCulture = new DisposableBritishCultureInfo();
 
         var provider = new ServiceCollection()
-            .AddEnumerablesToMarkdown()
+            .AddEnumerablesToMarkdown(dictionaryBuilderConfigurator: c => c.AddDefaultValueTransformers())
             .Services
             .BuildServiceProvider();
 
         var result = provider.GetRequiredService<IEnumerableOfDictionaryToMarkdownTableBuilder>()
             .CreateTable(
             [
-                new Dictionary<string, object> { ["Name"] = "Als" },
-                new Dictionary<string, object> { ["Name"] = "Other" }
+                new Dictionary<string, object> { ["Name"] = "Als", ["Age"] = 12, ["Other"] = null },
+                new Dictionary<string, object> { ["Name"] = "Other", ["Age"] = 13, ["Other"] = 123 }
             ]);
 
         result.Should().Be(
             """
-            |  Age | Name   | Description                     | Other                   | TheDate     | ADate                              |  TheDecimal |    TheDouble |
-            | ---: | :----- | :------------------------------ | :---------------------- | :---------- | :--------------------------------- | ----------: | -----------: |
-            |   12 | Als    | Just some<br/>more things here  | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |      123456 |  £654,321.32 |
-            |   13 | Other  | An anonymous entity             | Other { Name = other }  | 01/02/2010  | 2020-03-02T00:00:00.0000000+00:00  |        1234 |    £4,321.00 |
+            | Name   |  Age | Other   |
+            | :----- | ---: | :------ |
+            | Als    |   12 | `null`  |
+            | Other  |   13 | 123     |
 
             """.ReplaceLineEndings()
         );        
@@ -405,7 +407,7 @@ public class ToMarkdownTests
             new(1, "a-name", "a-description")
         }.ToMarkdownTable(new EnumerableToMarkdownTableBuilderOptions()
             .UseDefaultPropertyMetaDataProvider(c => c
-                .UseHeaderProvider(pi => $"*{pi.Name}*")
+                .UseHeaderProvider(pi => $"*{pi.PropertyName}*")
                 .ForClass<InclusionAndExclusion>(c => c
                     .ExcludeProperties(c => c.Description))
             )

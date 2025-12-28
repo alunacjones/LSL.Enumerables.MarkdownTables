@@ -11,7 +11,7 @@ internal class ValueExtractor
     internal IEnumerable<IDictionary<string, string>> ExtractValues<T>(
         IEnumerable<T> values,
         IEnumerable<KeyValuePair<string, PropertyMetaData>> properties,
-        BaseEnumerableToMarkdownTableBuilderOptions options)
+        BaseEnumerableToMarkdownTableBuilderOptionsNoMetaData options)
     {
         var composite = CompositeHandlerFactory.CreateCompositeHandler(
             options.ValueTransformers.Select(v => new HandlerDelegate<object, string>(v.Transform))).Handler;
@@ -21,14 +21,14 @@ internal class ValueExtractor
             return properties.Select(kvp => kvp.Value).Aggregate(new Dictionary<string, string>(), (agg, i) =>
             {
                 var value = ((i.ValueTransformer is null 
-                    ? composite(i.PropertyInfo.GetValue(v))
+                    ? composite(i.PropertyValueGetter(v))
                     : i.ValueTransformer.Transform(
-                        i.PropertyInfo.GetValue(v),
-                        [ExcludeFromCodeCoverage] () => $"{i.PropertyInfo.GetValue(v)}")) 
-                        ?? $"{i.PropertyInfo.GetValue(v)}")
+                        i.PropertyValueGetter(v),
+                        [ExcludeFromCodeCoverage] () => $"{i.PropertyValueGetter(v)}")) 
+                        ?? $"{i.PropertyValueGetter(v)}")
                     .InternalReplaceLineEndings();
 
-                agg.Add(i.PropertyInfo.Name, value);
+                agg.Add(i.PropertyName, value);
                 return agg;
             });
         });        

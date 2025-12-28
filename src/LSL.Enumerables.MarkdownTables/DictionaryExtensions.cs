@@ -12,9 +12,9 @@ internal static class DictionaryExtensions
         source
             .Select(kvp => kvp.Value)
             .Select(p => new KeyValuePair<string, string>(
-                p.PropertyInfo.Name,
-                (source[p.PropertyInfo.Name].HeaderProvider ?? DefaultHeaderProvider.Instance)
-                .GetHeader(p.PropertyInfo)));
+                p.PropertyName,
+                (source[p.PropertyName].HeaderProvider ?? DefaultHeaderProvider.Instance)
+                .GetHeader(p)));
 
     public static IDictionary<string, int> GetMaxLengths(
         this IEnumerable<IDictionary<string, string>> extractedValues,

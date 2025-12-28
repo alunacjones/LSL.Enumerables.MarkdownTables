@@ -18,10 +18,10 @@ internal class PropertyMetaDataProviderRetriever
 
         if (_providers.ContainsKey(key) is false)
         {
-            _providers[key] = typeof(T).GetProperties().AsEnumerable()
+            _providers[key] = type.GetProperties().AsEnumerable()
                 .Select(options.PropertyMetaDataProvider.CreateMetaData)
                 .Where(p => p.IncludeInOutput)
-                .ToDictionary(m => m.PropertyInfo.Name, m => m);
+                .ToDictionary(m => m.PropertyName, m => m);
         }
 
         return _providers[key];

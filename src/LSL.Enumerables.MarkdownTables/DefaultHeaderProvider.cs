@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace LSL.Enumerables.MarkdownTables;
 
 /// <inheritdoc/>
@@ -11,5 +9,5 @@ public class DefaultHeaderProvider : IHeaderProvider
     public static IHeaderProvider Instance { get; } = new DefaultHeaderProvider();
 
     /// <inheritdoc/>
-    public string GetHeader(PropertyInfo propertyInfo) => propertyInfo.Name;
+    public string GetHeader(PropertyMetaData propertyInfo) => propertyInfo.PropertyName;
 }

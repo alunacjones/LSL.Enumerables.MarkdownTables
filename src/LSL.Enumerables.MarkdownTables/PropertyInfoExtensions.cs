@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Reflection;
 using LSL.Enumerables.MarkdownTables.Infrastructure;
 
@@ -11,37 +9,12 @@ namespace LSL.Enumerables.MarkdownTables;
 /// </summary>
 public static class PropertyInfoExtensions
 {
-    private static readonly Lazy<ISet<Type>> _numberTypesLookup = new(
-        () => new HashSet<Type>
-        {
-            typeof(int),
-            typeof(decimal),
-            typeof(int?),
-            typeof(decimal?),
-            typeof(double),
-            typeof(double?),
-            typeof(long),
-            typeof(long?),
-            typeof(BigInteger),
-            typeof(BigInteger?),
-            typeof(byte),
-            typeof(byte?),
-            typeof(short),
-            typeof(short?),
-            typeof(float),
-            typeof(float?)            
-        }
-    );
-
     /// <summary>
     /// Determines the justification of a property based on its type
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static Justification GetJustification(this PropertyInfo source) => 
-        _numberTypesLookup.Value.Contains(source.PropertyType)
-            ? Justification.Right
-            : Justification.Left;
+    public static Justification GetJustification(this PropertyInfo source) => source.PropertyType.GetJustification();
 
     /// <summary>
     /// Determine if a property is a simple type
